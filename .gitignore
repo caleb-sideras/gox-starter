@@ -1,0 +1,52 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+# Test binary, built with `go test -c`
+*.test
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (vendor is sometimes still used, but not recommended with Go Modules)
+vendor/
+
+# Go Modules
+# go.sum
+# go.mod
+
+# IDEs
+# VSCode
+.vscode/
+# JetBrains IDEs (GoLand, IntelliJ)
+.idea/
+
+# Node related
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+package-lock.json
+.yarn-integrity
+
+# OS-specific files
+.DS_Store      # macOS
+Thumbs.db      # Windows
+desktop.ini    # Windows
+
+# Temp files and cache directories
+*.swp          # Vim
+*.swo          # Vim
+*.tmp
+*.bak
+*.cache
+
+# Build files
+static/css/*
+static/html/*
+static/js/*
+
+bin/
+pkg/

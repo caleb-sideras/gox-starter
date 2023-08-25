@@ -1,0 +1,8 @@
+{{define "card"}}
+<a href="{{.Link}}"
+  class="flex flex-col relative gap-2 text-start rounded-3xl bg-surface-1 text-on-surface p-6 cursor-pointer hover:bg-secondary-container hover:text-on-secondary-container">
+  <md-ripple></md-ripple>
+  <span class="text-2xl font-medium">{{.Title}}</span>
+  <span class="text-md">{{.Description}}</span>
+</a>
+{{end}}

@@ -1,0 +1,19 @@
+{{define "body"}}
+
+<div id="markdown" class="flex flex-col lg:ml-drawer-width max-w-6xl ">
+
+  {{range .LargeCards}}
+
+  {{ block "largecard" . }}
+
+  {{end}}
+
+  {{end}}
+
+  <div class="gap-2 p-8">
+    {{ block "markdown" . }}
+    {{end}}
+  </div>
+
+</div>
+{{end}}

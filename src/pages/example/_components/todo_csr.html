@@ -1,0 +1,46 @@
+{{ define "todo" }}
+{{ block "todo-csr" .}}
+<div x-data="{
+  init() {  
+    Alpine.data('todos', () => ({
+      data: [],
+      submitData(event){
+        this.data.push(Array.from(new FormData(event.target))[0][1])
+      }
+    }))
+  }  
+}" class="flex h-full">
+  <div x-data="todos" class="flex flex-col h-full gap-4">
+    <form @submit.prevent="submitData" method="POST" class="flex justify-between items-center w-full gap-4">
+      <md-outlined-text-field label="Add a new task" type="text" name="task" id="task">
+        <md-circular-progress slot="trailingicon" indeterminate class="htmx-indicator" id="spinner" role="status"
+          aria-hidden="true">
+        </md-circular-progress>
+      </md-outlined-text-field>
+
+      <md-filled-button type="submit" class="items-center h-full">
+        <md-icon>
+          <span class="material-symbols-outlined"
+            style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">
+            add
+          </span>
+        </md-icon>
+      </md-filled-button>
+    </form>
+
+    <ul class="list-group overflow-auto flex-1 bg-secondary-container text-on-secondary-container rounded-md"
+      id="task-list">
+      <template x-for="todo in data">
+        <span>
+          <li class="w-full justify-between align-middle flex">
+            <span x-text="todo" class='list-group-item my-auto px-4'></span>
+            <md-checkbox></md-checkbox>
+          </li>
+          <md-divider inset></md-divider>
+        </span>
+      </template>
+    </ul>
+  </div>
+</div>
+{{end}}
+{{end}}
