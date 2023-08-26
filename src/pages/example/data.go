@@ -1,6 +1,6 @@
 package example
 
-import "github.com/caleb-sideras/gox/utils"
+import "github.com/caleb-sideras/goxstack/gox/utils"
 
 var Content ExampleContent = ExampleContent{
 	ExampleActive: true,

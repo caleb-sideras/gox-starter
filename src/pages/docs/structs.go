@@ -1,6 +1,6 @@
 package docs
 
-import "calebsideras.com/gox/src/global"
+import "github.com/caleb-sideras/goxstack/src/global"
 
 type DocsData struct {
 	HomeActive    bool

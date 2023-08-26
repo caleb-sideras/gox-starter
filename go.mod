@@ -1,4 +1,4 @@
-module calebsideras.com/gox
+module github.com/caleb-sideras/goxstack
 
 go 1.20
 

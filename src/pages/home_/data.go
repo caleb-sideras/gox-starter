@@ -1,6 +1,6 @@
 package home
 
-import "github.com/caleb-sideras/gox/utils"
+import "github.com/caleb-sideras/goxstack/gox/utils"
 
 var Content HomeContent = HomeContent{
 	HomeActive:   true,

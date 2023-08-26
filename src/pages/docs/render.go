@@ -1,9 +1,9 @@
 package docs
 
 import (
-	"calebsideras.com/gox/src/global"
-	"calebsideras.com/gox/src/pages/home_"
 	"github.com/caleb-sideras/gox/utils"
+	"github.com/caleb-sideras/goxstack/src/global"
+	"github.com/caleb-sideras/goxstack/src/pages/home_"
 	"html/template"
 	"log"
 )
