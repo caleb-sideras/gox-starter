@@ -17,9 +17,11 @@ func PreRenderDocs_() error {
 	}
 
 	markdownDocsTemplates := map[string]string{
-		"spa-vs-mpa":          "pages/docs/_markdown/spa-vs-mpa.md",
-		"folder-structure":    "pages/docs/_markdown/folder-structure.md",
-		"client-side-routing": "pages/docs/_markdown/client-side-routing.md",
+		"spa-vs-mpa":           "pages/docs/_markdown/spa-vs-mpa.md",
+		"routing-fundamentals": "pages/docs/_markdown/folder-structure.md",
+		"client-side-routing":  "pages/docs/_markdown/client-side-routing.md",
+		"pre-rendered-routes":  "pages/docs/_markdown/data.md",
+		"custom-handling":      "pages/docs/_markdown/handle.md",
 	}
 
 	htmlDocsTemplates := map[string][]string{

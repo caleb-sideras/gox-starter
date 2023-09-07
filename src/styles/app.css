@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url("./theme.css");
 
 .dark {
   --md-sys-color-on-surface-variant-2: linear-gradient(0deg, rgba(196, 200, 187, .08), rgba(196, 200, 187, .08));
@@ -54,6 +53,7 @@
   --md-sys-color-background: #fdfdf6;
   --md-sys-color-on-surface: #1a1c18;
   --md-sys-color-on-surface-variant: #43493e;
+  --md-sys-color-surface: #FAFDFC;
   --md-sys-color-surface-0: #fdfdf6;
   --md-sys-color-surface-variant: #dfe4d6;
   --md-sys-color-inverse-surface: #2f312c;
@@ -114,7 +114,10 @@
   --md-list-item-list-item-label-text-color: var(--md-sys-color-on-surface-2);
   --md-list-item-list-item-leading-icon-color: var(--md-sys-color-on-surface-2);
   --md-list-item-list-item-trailing-icon-color: var(--md-sys-color-on-surface-2);
+
+/* 
   --md-navigation-drawer-modal-scrim-color: black;
+*/ 
   --md-navigation-drawer-modal-scrim-opacity: 0.32;
 }
 

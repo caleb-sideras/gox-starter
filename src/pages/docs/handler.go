@@ -1,7 +1,7 @@
 package docs
 
 import (
-	"github.com/caleb-sideras/gox/utils"
+	// "github.com/caleb-sideras/gox/utils"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -15,19 +15,21 @@ func docsGeneralHandler(parentPaths []string, w http.ResponseWriter, r *http.Req
 
 	path := r.URL.Path
 	paths := map[string]bool{
-		"/docs/spa-vs-mpa":          true,
-		"/docs/client-side-routing": true,
-		"/docs/folder-structure":    true,
-		"/docs/introduction":        true,
+		"/docs/spa-vs-mpa":           true,
+		"/docs/client-side-routing":  true,
+		"/docs/routing-fundamentals": true,
+		"/docs/introduction":         true,
+		"/docs/pre-rendered-routes":  true,
+		"/docs/custom-handling":      true,
 	}
 
 	if _, ok := paths[path]; ok {
-		if utils.IsHtmxRequest(r) {
-			log.Println("Serving static: " + filepath.Base(r.URL.Path) + "-body.html")
-			http.ServeFile(w, r, "../static/html/"+filepath.Base(r.URL.Path)+"-body.html")
-		} else {
-			log.Println("Serving static: " + filepath.Base(r.URL.Path) + ".html")
-			http.ServeFile(w, r, "../static/html/"+filepath.Base(r.URL.Path)+".html")
-		}
+		// if utils.IsHtmxRequest(r) {
+		// 	log.Println("Serving static: " + filepath.Base(r.URL.Path) + "-body.html")
+		// 	http.ServeFile(w, r, "../static/html/"+filepath.Base(r.URL.Path)+"-body.html")
+		// } else {
+		log.Println("Serving static: " + filepath.Base(r.URL.Path) + ".html")
+		http.ServeFile(w, r, "../static/html/"+filepath.Base(r.URL.Path)+".html")
+		// }
 	}
 }

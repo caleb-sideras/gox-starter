@@ -16,59 +16,73 @@
         this.activeTabRef.active = false;
         event.target.active = true;
         this.activeTabRef = event.target;
-        $dispatch(`navigationtabclicked${event.target.id}`, { bubbles: true });
       }
     }
   }">
 
-  <!-- HMTX calls -->
-  <a hx-get="/" hx-target="#body" hx-swap="innerHTML" x-data
-    @navigationtabclickedhome.document="$el.click(); changeUrl('/')"></a>
-  <a hx-get="/example" hx-target="#body" hx-swap="innerHTML" x-data
-    @navigationtabclickedexample.document="$el.click(); changeUrl('/example')"></a>
-  <a hx-get="/docs/introduction" hx-target="#body" hx-swap="innerHTML" x-data
-    @navigationtabclickeddocs.document="$el.click(); changeUrl('/docs/introduction')"></a>
-
   <!-- Computer View -->
   <div class="hidden lg:flex h-screen bg-surface-2">
-    <md-list active-index="0" class="w-[90px]">
-      <md-navigation-tab {{if .HomeActive}}active{{end}} id="home" label="Home" x-ref="home"
-        @click="($refs.docsdrawer.opened) && ($refs.docsdrawer.opened = false); handleTabClick($event);">
-        <i slot="activeIcon" class="material-symbols-outlined pointer-events-none"
-          style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">home</i>
-        <i slot="inactiveIcon" class="material-symbols-outlined pointer-events-none"
-          style="font-variation-settings: 'FILL' 0 , 'wght' 400, 'GRAD' 0, 'opsz' 48;">home</i>
-      </md-navigation-tab>
+    <md-list active-index="0" class="m-3" hx-boost="true">
 
-      <md-navigation-tab {{if .ExampleActive}}active{{end}} id="example" label="Example" x-ref="example"
-        @click="($refs.docsdrawer.opened) && ($refs.docsdrawer.opened = false); handleTabClick($event);">
-        <i slot="activeIcon" class="material-symbols-outlined pointer-events-none"
-          style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">code</i>
-        <i slot="inactiveIcon" class="material-symbols-outlined pointer-events-none"
-          style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;">code</i>
-      </md-navigation-tab>
+      <a href="/" hx-target="#body" hx-swap="innerHTML">
+        <md-navigation-tab {{if .HomeActive}}active{{end}} id="home" label="Home" x-ref="home"
+          @click="($refs.docsdrawer.opened) && ($refs.docsdrawer.opened = false); handleTabClick($event);">
+          <span slot="activeIcon" class="material-symbols-outlined pointer-events-none"
+            style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">home</span>
+          <span slot="inactiveIcon" class="material-symbols-outlined pointer-events-none"
+            style="font-variation-settings: 'FILL' 0 , 'wght' 400, 'GRAD' 0, 'opsz' 48;">home</span>
+        </md-navigation-tab>
+      </a>
 
-      <md-navigation-tab {{if .DocsActive}}active{{end}} id="docs" label="Docs" x-ref="docs"
-        @click="(!$refs.docsdrawer.opened) && ($refs.docsdrawer.opened = true); handleTabClick($event);">
-        <i slot="activeIcon" class="material-symbols-outlined pointer-events-none"
-          style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">book</i>
-        <i slot="inactiveIcon" class="material-symbols-outlined pointer-events-none"
-          style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;">book</i>
-      </md-navigation-tab>
+      <a href="/example" hx-target="#body" hx-swap="innerHTML">
+        <md-navigation-tab {{if .ExampleActive}}active{{end}} id="example" label="Example" x-ref="example"
+          @click="($refs.docsdrawer.opened) && ($refs.docsdrawer.opened = false); handleTabClick($event);">
+          <span slot="activeIcon" class="material-symbols-outlined pointer-events-none"
+            style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">code</span>
+          <span slot="inactiveIcon" class="material-symbols-outlined pointer-events-none"
+            style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;">code</span>
+        </md-navigation-tab>
+      </a>
+
+      <a href="/docs/introduction" hx-target="#body" hx-swap="innerHTML">
+        <md-navigation-tab {{if .DocsActive}}active{{end}} id="docs" label="Docs" x-ref="docs"
+          @click="(!$refs.docsdrawer.opened) && ($refs.docsdrawer.opened = true); handleTabClick($event);">
+          <span slot="activeIcon" class="material-symbols-outlined pointer-events-none"
+            style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">book</span>
+          <span slot="inactiveIcon" class="material-symbols-outlined pointer-events-none"
+            style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;">book</span>
+        </md-navigation-tab>
+      </a>
+
     </md-list>
 
     <!-- Docs Drawer -->
     <md-navigation-drawer-modal x-ref="docsdrawer" pivot="start" active-index="0" {{if .DocsActive}}opened{{end}}>
-      <md-list listTabIndex="0" class="h-full bg-surface-2 z-10 px-2 border-l border-surface-variant">
-        <md-list-item headline="Introduction" id="introduction" hx-get="/docs/introduction" hx-target="#body"
-          hx-swap="innerHTML" x-data @click="changeUrl('/docs/introduction')">
-        </md-list-item>
-        <md-list-item headline="SPA vs MPA" id="spa-vs-mpa" hx-get="/docs/spa-vs-mpa" hx-target="#body"
-          hx-swap="innerHTML" x-data @click="changeUrl('/docs/spa-vs-mpa')">
-        </md-list-item>
-        <md-list-item headline="Client Side Routing" id="client-side-routing" hx-get="/docs/client-side-routing"
-          hx-target="#body" hx-swap="innerHTML" x-data @click="changeUrl('/docs/client-side-routing')">
-        </md-list-item>
+      <md-list listTabIndex="0" class="h-full bg-surface-2 z-10 px-2 border-l border-surface-variant" hx-boost="true">
+        <a href="/docs/introduction" hx-target="#body" hx-select="#body" hx-swap="innerHTML">
+          <md-list-item headline="Introduction" id="introduction">
+          </md-list-item>
+        </a>
+        <a href="/docs/routing-fundamentals" hx-target="#body" hx-select="#body" hx-swap="innerHTML">
+          <md-list-item headline="Routing" id="routing-fundamentals">
+          </md-list-item>
+        </a>
+        <a href="/docs/pre-rendered-routes" hx-target="#body" hx-select="#body" hx-swap="innerHTML">
+          <md-list-item headline="Pre-Rendering" id="pre-rendered-routes">
+          </md-list-item>
+        </a>
+        <a href="/docs/custom-handling" hx-target="#body" hx-select="#body" hx-swap="innerHTML">
+          <md-list-item headline="Custom Handling" id="custom-handling">
+          </md-list-item>
+        </a>
+        <a href="/docs/spa-vs-mpa" hx-target="#body" hx-select="#body" hx-swap="innerHTML">
+          <md-list-item headline="SPA vs MPA" id="spa-vs-mpa">
+          </md-list-item>
+        </a>
+        <a href="/docs/client-side-routing" hx-target="#body" hx-select="#body" hx-swap="innerHTML">
+          <md-list-item headline="Client Side Routing" id="client-side-routing">
+          </md-list-item>
+        </a>
       </md-list>
     </md-navigation-drawer-modal>
   </div>
