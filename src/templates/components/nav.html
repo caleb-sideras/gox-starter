@@ -20,7 +20,6 @@
   <!-- Computer View -->
   <div class="hidden lg:flex h-screen bg-surface-2">
     <md-list active-index="0" class="m-3" hx-boost="true">
-
       <a href="/" hx-target="#body" hx-swap="innerHTML">
         <md-navigation-tab {{if eq .ActiveTabId "home" }}active{{end}} id="home" label="Home" x-ref="home"
           @click="handleTabClick($event);">
@@ -50,7 +49,6 @@
             style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;">book</span>
         </md-navigation-tab>
       </a>
-
     </md-list>
   </div>
 
