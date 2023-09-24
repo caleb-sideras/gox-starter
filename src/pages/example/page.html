@@ -1,11 +1,11 @@
-{{define "body"}}
+{{define "page"}}
 
 <link rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <link rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 m-2">
 
   <div class="col-span-1 bg-surface-1 text-neutral-10 p-8 sm:p-16 rounded-xl">
     <h1 class="text-6xl sm:text-8xl font-medium mb-2">Example</h1>
@@ -23,32 +23,21 @@
       </div>
     </div>
 
-    <md-navigation-bar active-index="0" x-data="{ 
-    activeTabId: 'server', 
-    handleTabClick(event) {
-      if(event.target.id !== this.activeTabId) {
-        $dispatch(`navigationtabclicked${event.target.id}`, { bubbles: true })
-        this.activeTabId = event.target.id;
-      }
-    }
-  }">
-      <md-navigation-tab id="server" label="Server" active @click="handleTabClick">
+    <md-navigation-bar active-index="0">
+      <md-navigation-tab id="server" label="Server" active hx-get="/example/todossr" hx-target="#todo"
+        hx-swap="innerHTML">
         <span slot="activeIcon" class="material-symbols-outlined"
           style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">dns</span>
         <span slot="inactiveIcon" class="material-symbols-outlined"
           style="font-variation-settings: 'FILL' 0 , 'wght' 400, 'GRAD' 0, 'opsz' 48;">dns</span>
       </md-navigation-tab>
-      <div x-data @navigationtabclickedserver.document="$el.click()" hx-get="/example/todossr" hx-target="#todo"
-        hx-swap="innerHTML"></div>
 
-      <md-navigation-tab id="client" label="Client" @click="handleTabClick">
+      <md-navigation-tab id="client" label="Client" hx-get="/example/todocsr" hx-target="#todo" hx-swap="innerHTML">
         <span slot="activeIcon" class="material-symbols-outlined"
           style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">person</span>
         <span slot="inactiveIcon" class="material-symbols-outlined"
           style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;">person</span>
       </md-navigation-tab>
-      <div x-data @navigationtabclickedclient.document="$el.click()" hx-get="/example/todocsr" hx-target="#todo"
-        hx-swap="innerHTML"></div>
     </md-navigation-bar>
   </div>
 </div>

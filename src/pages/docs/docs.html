@@ -1,7 +1,32 @@
-{{define "body"}}
+{{define "page"}}
+
+<div x-data x-init="$refs.docsdrawer.opened=true" class="hidden lg:flex h-screen fixed">
+  <md-navigation-drawer-modal x-ref="docsdrawer" pivot="start" active-index="0">
+    <md-list listTabIndex="0" class="h-full bg-surface-2 z-10 px-2 border-l border-surface-variant" hx-boost="true">
+      <md-list-item headline="Introduction" href="">
+      </md-list-item>
+      <md-list-item headline="Routing" href="#routing-fundamentals">
+      </md-list-item>
+      <md-list-item headline="Pages" href="#pages">
+      </md-list-item>
+      <md-list-item headline="Index" href="#index">
+      </md-list-item>
+      <md-list-item headline="Data" href="#data-handling">
+      </md-list-item>
+      <md-list-item headline="Render" href="#custom-rendering">
+      </md-list-item>
+      <md-list-item headline="Handling" href="#custom-handling">
+      </md-list-item>
+      <md-list-item headline="Gox Router" href="#gox-router">
+      </md-list-item>
+    </md-list>
+  </md-navigation-drawer-modal>
+</div>
 
 <div id="markdown" class="flex flex-col lg:ml-drawer-width max-w-6xl ">
+
   <script src="/static/js/prism.js"></script>
+  <link href="/static/css/prism.css" rel="stylesheet" />
   {{range .LargeCards}}
 
   {{ block "largecard" . }}
@@ -10,7 +35,7 @@
 
   {{end}}
 
-  <div class="gap-2 p-8">
+  <div class="gap-2 md:px-8 px-4">
     {{ block "markdown" . }}
     {{end}}
   </div>

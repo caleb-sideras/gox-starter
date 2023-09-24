@@ -1,10 +1,10 @@
 package example
 
-import "github.com/caleb-sideras/gox/utils"
+import "github.com/caleb-sideras/goxstack/gox/utils"
 
-func TodoCsr() (interface{}, []string, string) {
-	return utils.Render{}.DefaultRender(nil, []string{"pages/example/_components/todo_csr.html"}, "todo-csr")
+func TodoCsr_() utils.RenderFilesType {
+	return utils.RenderFilesType{nil, []string{"pages/example/_components/todo_csr.html"}, "todo-csr"}
 }
-func TodoSsr() (interface{}, []string, string) {
-	return utils.Render{}.DefaultRender(nil, []string{"pages/example/_components/todo_ssr.html"}, "todo-ssr")
+func TodoSsr_() utils.RenderFilesType {
+	return utils.RenderFilesType{nil, []string{"pages/example/_components/todo_ssr.html"}, "todo-ssr"}
 }

@@ -48,6 +48,7 @@ const customColors = {
     'scrim': 'var(--md-sys-color-scrim)',
     'neutral-10': 'var(--md-sys-color-neutral-10)',
     'neutral-90': 'var(--md-sys-color-neutral-90)',
+    'pre-primary': 'var(--md-sys-color-pre-primary)',
 };
 
 module.exports = customColors;

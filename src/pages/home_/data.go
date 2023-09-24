@@ -1,9 +1,11 @@
 package home
 
-import "github.com/caleb-sideras/goxstack/gox/utils"
+import (
+	"github.com/caleb-sideras/goxstack/gox/utils"
+	"net/http"
+)
 
 var Content HomeContent = HomeContent{
-	HomeActive:   true,
 	ActiveTabId:  "home",
 	HomeCards:    VarHomeCards,
 	HomeSections: VarHomeSections,
@@ -13,7 +15,11 @@ var Templates []string = []string{
 	"templates/components/card.html",
 }
 
-var Data utils.PageData = utils.PageData{
+var data utils.PageData = utils.PageData{
 	Content:   Content,
 	Templates: Templates,
+}
+
+func Data(w http.ResponseWriter, r *http.Request) utils.DataReturnType {
+	return utils.DataReturnType{data, nil}
 }

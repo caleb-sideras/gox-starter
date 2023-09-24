@@ -4,7 +4,7 @@ The skeleton of every application is routing. This page will introduce you to th
 
 ## Folder Structure
 
-```
+```bash
 .
 ├─ .gox
 │  ├─ main.go
@@ -71,5 +71,5 @@ GoX provides a set of special files to create UI with specific behavior in neste
 - `index.html` Shared UI for a segment and its children
 - `page.html`	Unique UI of a route and make routes publicly accessible
 - `data.go` Templates and page content needed to populate the UI
-- `handle.go` Sub-route handlers unique to the route  
-- `render.go` Sub-route pages unique to the route
+- `handle.go` Handlers unique to the route  
+- `render.go` Render partials unique to the route

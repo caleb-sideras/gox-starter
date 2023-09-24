@@ -3,9 +3,8 @@ package example
 import "github.com/caleb-sideras/goxstack/gox/utils"
 
 var Content ExampleContent = ExampleContent{
-	ExampleActive: true,
-	ActiveTabId:   "example",
-	Tasks:         []Task{},
+	ActiveTabId: "example",
+	Tasks:       []Task{},
 }
 var Templates []string = []string{
 	"templates/components/nav.html",

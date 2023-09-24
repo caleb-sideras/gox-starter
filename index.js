@@ -16,7 +16,6 @@ import '@material/web/labs/navigationtab/navigation-tab.js';
 import '@material/web/labs/navigationdrawer/navigation-drawer.js';
 import '@material/web/labs/navigationdrawer/navigation-drawer-modal.js';
 import '@material/web/elevation/elevation.js';
-// import '@material/web/list/list-item-link.js';
 import '@material/web/list/list-item.js';
 import '@material/web/list/list.js';
 import '@material/web/ripple/ripple.js';

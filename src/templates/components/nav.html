@@ -8,9 +8,6 @@
 
 <div x-data="{ 
     activeTabRef: $refs.{{.ActiveTabId}}, 
-    changeUrl(newUrl) {
-        history.pushState({}, '', newUrl);
-    },
     handleTabClick(event) {
       if(event.target.id !== this.activeTabRef.id) {
         this.activeTabRef.active = false;
@@ -25,8 +22,8 @@
     <md-list active-index="0" class="m-3" hx-boost="true">
 
       <a href="/" hx-target="#body" hx-swap="innerHTML">
-        <md-navigation-tab {{if .HomeActive}}active{{end}} id="home" label="Home" x-ref="home"
-          @click="($refs.docsdrawer.opened) && ($refs.docsdrawer.opened = false); handleTabClick($event);">
+        <md-navigation-tab {{if eq .ActiveTabId "home" }}active{{end}} id="home" label="Home" x-ref="home"
+          @click="handleTabClick($event);">
           <span slot="activeIcon" class="material-symbols-outlined pointer-events-none"
             style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">home</span>
           <span slot="inactiveIcon" class="material-symbols-outlined pointer-events-none"
@@ -35,8 +32,8 @@
       </a>
 
       <a href="/example" hx-target="#body" hx-swap="innerHTML">
-        <md-navigation-tab {{if .ExampleActive}}active{{end}} id="example" label="Example" x-ref="example"
-          @click="($refs.docsdrawer.opened) && ($refs.docsdrawer.opened = false); handleTabClick($event);">
+        <md-navigation-tab {{if eq .ActiveTabId "example" }}active{{end}} id="example" label="Example" x-ref="example"
+          @click="handleTabClick($event);">
           <span slot="activeIcon" class="material-symbols-outlined pointer-events-none"
             style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">code</span>
           <span slot="inactiveIcon" class="material-symbols-outlined pointer-events-none"
@@ -45,8 +42,8 @@
       </a>
 
       <a href="/docs/introduction" hx-target="#body" hx-swap="innerHTML">
-        <md-navigation-tab {{if .DocsActive}}active{{end}} id="docs" label="Docs" x-ref="docs"
-          @click="(!$refs.docsdrawer.opened) && ($refs.docsdrawer.opened = true); handleTabClick($event);">
+        <md-navigation-tab {{if eq .ActiveTabId "docs" }}active{{end}} id="docs" label="Docs" x-ref="docs"
+          @click="handleTabClick($event);">
           <span slot="activeIcon" class="material-symbols-outlined pointer-events-none"
             style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">book</span>
           <span slot="inactiveIcon" class="material-symbols-outlined pointer-events-none"
@@ -55,36 +52,6 @@
       </a>
 
     </md-list>
-
-    <!-- Docs Drawer -->
-    <md-navigation-drawer-modal x-ref="docsdrawer" pivot="start" active-index="0" {{if .DocsActive}}opened{{end}}>
-      <md-list listTabIndex="0" class="h-full bg-surface-2 z-10 px-2 border-l border-surface-variant" hx-boost="true">
-        <a href="/docs/introduction" hx-target="#body" hx-select="#body" hx-swap="innerHTML">
-          <md-list-item headline="Introduction" id="introduction">
-          </md-list-item>
-        </a>
-        <a href="/docs/routing-fundamentals" hx-target="#body" hx-select="#body" hx-swap="innerHTML">
-          <md-list-item headline="Routing" id="routing-fundamentals">
-          </md-list-item>
-        </a>
-        <a href="/docs/pre-rendered-routes" hx-target="#body" hx-select="#body" hx-swap="innerHTML">
-          <md-list-item headline="Pre-Rendering" id="pre-rendered-routes">
-          </md-list-item>
-        </a>
-        <a href="/docs/custom-handling" hx-target="#body" hx-select="#body" hx-swap="innerHTML">
-          <md-list-item headline="Custom Handling" id="custom-handling">
-          </md-list-item>
-        </a>
-        <a href="/docs/spa-vs-mpa" hx-target="#body" hx-select="#body" hx-swap="innerHTML">
-          <md-list-item headline="SPA vs MPA" id="spa-vs-mpa">
-          </md-list-item>
-        </a>
-        <a href="/docs/client-side-routing" hx-target="#body" hx-select="#body" hx-swap="innerHTML">
-          <md-list-item headline="Client Side Routing" id="client-side-routing">
-          </md-list-item>
-        </a>
-      </md-list>
-    </md-navigation-drawer-modal>
   </div>
 
   <!-- Mobile View -->
@@ -106,7 +73,7 @@
       </md-icon>
 
       <md-list listTabIndex="0" class="h-full bg-surface-2 z-10 mt-2 px-4">
-        <md-list-item {{if .HomeActive}}active{{end}} headline="Home" id="home" @click="handleTabClick">
+        <md-list-item {{if eq .ActiveTabId "example" }}active{{end}} headline="Home" id="home" @click="handleTabClick">
           <md-icon slot="start" data-variant="icon">
             <span class="material-symbols-outlined"
               style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;">
@@ -114,7 +81,8 @@
             </span>
           </md-icon>
         </md-list-item>
-        <md-list-item {{if .ExampleActive}}active{{end}} headline="Example" id="example" @click="handleTabClick">
+        <md-list-item {{if eq .ActiveTabId "example" }}active{{end}} headline="Example" id="example"
+          @click="handleTabClick">
           <md-icon slot="start" data-variant="icon">
             <span class="material-symbols-outlined"
               style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">
@@ -122,7 +90,7 @@
             </span>
           </md-icon>
         </md-list-item>
-        <md-list-item {{if .DocsActive}}active{{end}} headline="Docs" id="docs" @click="handleTabClick">
+        <md-list-item {{if eq .ActiveTabId "docs" }}active{{end}} headline="Docs" id="docs" @click="handleTabClick">
           <md-icon slot="start" data-variant="icon">
             <span class="material-symbols-outlined"
               style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;">

@@ -85,6 +85,7 @@
   --md-sys-color-neutral-90: #e3e3e3;
   --md-sys-color-ref-neutral-100: #e3e3e3;
   --md-sys-color-ref-neutral-200: #c7c7c7;
+  --md-sys-color-pre-primary: #f3f6ea;
 
   --md-filled-button-label-text-type: 500 0.875rem/1.25rem system-ui;
   --md-outlined-field-label-text-type: 500 0.875rem/1.25rem system-ui;
@@ -115,9 +116,10 @@
   --md-list-item-list-item-leading-icon-color: var(--md-sys-color-on-surface-2);
   --md-list-item-list-item-trailing-icon-color: var(--md-sys-color-on-surface-2);
 
-/* 
+  --md-list-item-container-shape: var(--md-list-item-list-item-container-shape);
+  /* 
   --md-navigation-drawer-modal-scrim-color: black;
-*/ 
+*/
   --md-navigation-drawer-modal-scrim-opacity: 0.32;
 }
 
@@ -142,7 +144,7 @@
 }
 
 #markdown h1 {
-  @apply text-6xl mb-6;
+  @apply text-6xl mb-6 mt-8;
 }
 
 #markdown h2 {
@@ -153,6 +155,10 @@
   @apply text-2xl mt-4;
 }
 
+#markdown h4 {
+  @apply text-xl my-2;
+}
+
 #markdown a {
   @apply text-primary underline;
 }
@@ -161,12 +167,13 @@
   @apply text-on-primary-container;
 }
 
+
 #markdown code {
-  @apply bg-secondary-container text-on-secondary-container px-1 rounded font-mono;
+  @apply bg-surface-variant px-1 rounded;
 }
 
 #markdown pre {
-  @apply bg-secondary-container p-4 rounded-xl overflow-auto;
+  @apply border-surface-variant border bg-pre-primary p-4 rounded-xl overflow-auto;
 }
 
 #markdown pre code {
@@ -199,4 +206,8 @@
   @apply inline-block absolute top-2 -left-4 w-2 h-2 leading-none text-center;
   content: "";
   background-image: url("https://m3.material.io/static/assets/list-bullet.svg");
+}
+
+hr {
+  @apply mt-[48px] bg-[#d9e7cb] h-0.5
 }

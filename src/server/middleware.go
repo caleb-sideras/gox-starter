@@ -8,6 +8,7 @@ import (
 func Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Simplified example: In real scenarios, you will be performing security checks, rate limiting etc.
+		log.Println("-----------------------")
 		log.Println("Requested URI:", r.RequestURI)
 		next.ServeHTTP(w, r)
 	})

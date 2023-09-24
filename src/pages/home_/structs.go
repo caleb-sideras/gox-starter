@@ -16,10 +16,7 @@ type HomeSection struct {
 }
 
 type HomeContent struct {
-	HomeActive    bool
-	ExampleActive bool
-	DocsActive    bool
-	ActiveTabId   string
-	HomeCards     []HomeCard
-	HomeSections  []HomeSection
+	ActiveTabId  string
+	HomeCards    []HomeCard
+	HomeSections []HomeSection
 }

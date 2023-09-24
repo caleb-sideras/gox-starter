@@ -3,6 +3,7 @@ package global
 import (
 	"bytes"
 	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/parser"
 	"html/template"
 	"io/ioutil"
 	"strings"
@@ -10,7 +11,13 @@ import (
 
 func ConvertMarkdownToHTML(markdown []byte) (*template.Template, error) {
 	var buf bytes.Buffer
-	if err := goldmark.Convert(markdown, &buf); err != nil {
+	md := goldmark.New(
+		goldmark.WithParserOptions(
+			parser.WithAutoHeadingID(),
+			parser.WithAttribute(),
+		),
+	)
+	if err := md.Convert(markdown, &buf); err != nil {
 		return nil, err
 	}
 	tmpl, err := template.New("markdown").Parse(buf.String())

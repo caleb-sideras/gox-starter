@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func HandleAddTask(w http.ResponseWriter, r *http.Request) {
+func HandleAddTask_(w http.ResponseWriter, r *http.Request) {
 	// To showcase loading state
 	time.Sleep(1 * time.Second)
 	task := r.PostFormValue("task")
