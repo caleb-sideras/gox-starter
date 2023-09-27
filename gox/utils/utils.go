@@ -21,27 +21,49 @@ type RenderCustom struct {
 	Handler RenderCustomFunc
 }
 
-// FileRender enforces the return type required for GoX's default render handler. The name and relative path of your function will be the route.
+// The GoX Router will render and serve the full page
 // - Value: A struct containing the data you want executed in your template.
 // - StrArr: A list of strings, where each string represents represents the path to a .html file you want executed.
 // - Str: A string that indicates the template you want executed. Use "" for no template execution
-type RenderFilesType struct {
+type RenderFileStatic struct {
 	Value  interface{}
 	StrArr []string
 	Str    string
 }
-type RenderFilesFunc func() RenderFilesType
+type RenderFileStaticFunc func() RenderFileStatic
 
-// TemplateRender enforces the return type required for GoX's template render handler. The name and relative path of your function will be the route.
+// The GoX Router will render both the body or full page and serve based on state
 // - Value: A struct containing the data you want executed in your template.
-// - Tmpl: A *template.Template object.
+// - StrArr: A list of strings, where each string represents represents the path to a .html file you want executed.
 // - Str: A string that indicates the template you want executed. Use "" for no template execution
-type RenderTemplateType struct {
+type RenderFileDynamic struct {
+	Value  interface{}
+	StrArr []string
+	Str    string
+}
+type RenderFileDynamicFunc func() RenderFileDynamic
+
+// The GoX Router will render and serve the full page
+// - Value: A struct containing the data you want executed in your template.
+// - StrArr: A list of strings, where each string represents represents the path to a .html file you want executed.
+// - Str: A string that indicates the template you want executed. Use "" for no template execution
+type RenderTemplateStatic struct {
 	Value interface{}
 	Tmpl  *template.Template
 	Str   string
 }
-type RenderTemplateFunc func() RenderTemplateType
+type RenderTemplateStaticFunc func() RenderTemplateStatic
+
+// The GoX Router will render both the body or full page and serve based on state
+// - Value: A struct containing the data you want executed in your template.
+// - StrArr: A list of strings, where each string represents represents the path to a .html file you want executed.
+// - Str: A string that indicates the template you want executed. Use "" for no template execution
+type RenderTemplateDynamic struct {
+	Value interface{}
+	Tmpl  *template.Template
+	Str   string
+}
+type RenderTemplateDynamicFunc func() RenderTemplateDynamic
 
 type DataReturnType struct {
 	PageData
@@ -50,7 +72,7 @@ type DataReturnType struct {
 
 type DataReturnFunc func(w http.ResponseWriter, r *http.Request) DataReturnType
 
-func RenderFiles[T any](filePath string, outputDir string, templates []string, v T, templateExec string) error {
+func RenderFile[T any](filePath string, outputDir string, templates []string, v T, templateExec string) error {
 	tmpl := template.Must(template.ParseFiles(templates...))
 	return RenderTemplate(filePath, outputDir, tmpl, v, templateExec)
 }

@@ -61,10 +61,6 @@ var FILE_CHECK_LIST = map[string]bool{
 	METADATA_FILE: true,
 }
 
-type Gox struct {
-	OutputDir string
-}
-
 type GoxDir struct {
 	FileType string
 	FilePath string
@@ -73,6 +69,10 @@ type GoxDir struct {
 var EmptyPageData utils.PageData = utils.PageData{
 	Content:   struct{}{},
 	Templates: []string{},
+}
+
+type Gox struct {
+	OutputDir string
 }
 
 func NewGox(outputDir string) *Gox {
@@ -406,14 +406,57 @@ func (g *Gox) handleRoutes(r *mux.Router, eTags map[string]string) {
 	log.Println("---------------------RENDER HANDLERS-----------------------")
 	for _, route := range RenderList {
 		log.Println(route.Path + DIR)
-		r.HandleFunc(route.Path+"{slash:/?}",
-			func(w http.ResponseWriter, r *http.Request) {
-				log.Println("- - - - - - - - - - - -")
-				log.Println("Serving static component")
-				log.Println("Path:", filepath.Join(g.OutputDir, r.URL.Path, PAGE_FILE))
-				http.ServeFile(w, r, filepath.Join(g.OutputDir, r.URL.Path, PAGE_FILE))
-			},
-		)
+
+		switch route.Handler.(type) {
+		case func() utils.RenderFileStatic, func() utils.RenderTemplateStatic:
+			r.HandleFunc(route.Path+"{slash:/?}",
+				func(w http.ResponseWriter, r *http.Request) {
+
+					eTagPath := filepath.Join(r.URL.Path, PAGE_FILE)
+					pagePath := filepath.Join(g.OutputDir, eTagPath)
+
+					log.Println("- - - - - - - - - - - -")
+					log.Println("Serving static")
+					log.Println("Path:", pagePath)
+					log.Println("ETag:", eTags[eTagPath])
+
+					w.Header().Set("ETag", eTags[eTagPath])
+					http.ServeFile(w, r, pagePath)
+				},
+			)
+		case func() utils.RenderFileDynamic, func() utils.RenderTemplateDynamic:
+			r.HandleFunc(route.Path+"{slash:/?}",
+				func(w http.ResponseWriter, r *http.Request) {
+					// why we need dynamic? -> only if fully integrated into GoX Router
+
+					// STATIC -> simply serve the file
+					// DYNAMIC -> should find index (implicitly or explicitly), fixes all our issues, as index is typically used for state that doesnt change
+
+					// if hx-boost is used, implicitly meaning you want to re-direct to a new page, GoX will handle all of the routing (hx-target, hx-swap etc)
+					//    -> Page or Index returned based on index groups and others
+
+					// if hx-get='url?index=true' is used or regular http request, then the index+page is returned
+					// if hx-get or hx-get='url?index=false' is used, then page is returned
+
+					var eTagPath string
+					if utils.IsHtmxRequest(r) {
+						eTagPath = filepath.Join(r.URL.Path, PAGE_BODY_FILE)
+					} else {
+						eTagPath = filepath.Join(r.URL.Path, PAGE_FILE)
+					}
+					pagePath := filepath.Join(g.OutputDir, eTagPath)
+
+					log.Println("- - - - - - - - - - - -")
+					log.Println("Serving static")
+					log.Println("Path:", pagePath)
+					log.Println("ETag:", eTags[eTagPath])
+					w.Header().Set("ETag", eTags[eTagPath])
+					http.ServeFile(w, r, pagePath)
+				},
+			)
+		default:
+			log.Printf("Unknown function type for: %T\n", route.Handler)
+		}
 	}
 	log.Println("----------------------CUSTOM HANDLERS----------------------")
 	for _, route := range HandleList {
@@ -438,10 +481,14 @@ func handleRequest(w http.ResponseWriter, r *http.Request, pageFunc func(), inde
 				log.Println("Serving file: page - matching index")
 			} else {
 				indexFunc()
+				// w.Header().Set("HX-Location", "html")
+				// w.Header().Set("HX-Reswap", "innerHTML")
 				log.Println("Serving file: index - new index")
 			}
 		} else {
 			indexFunc()
+			// w.Header().Set("HX-Retarget", "html")
+			// w.Header().Set("HX-Reswap", "innerHTML")
 			log.Println("Serving file: index - no index")
 		}
 	} else {
@@ -470,7 +517,7 @@ func (g *Gox) renderStaticFiles() error {
 
 	// Rendering routes defined with page.html
 	for path, data := range PagesList {
-		err := utils.RenderFiles[interface{}](filepath.Join(path, PAGE_FILE), g.OutputDir, append(data.AdditionalTemplates, data.Data.Templates...), data.Data.Content, "")
+		err := utils.RenderFile[interface{}](filepath.Join(path, PAGE_FILE), g.OutputDir, append(data.AdditionalTemplates, data.Data.Templates...), data.Data.Content, "")
 		if err != nil {
 			return err
 		}
@@ -480,7 +527,7 @@ func (g *Gox) renderStaticFiles() error {
 		}
 		output += fmt.Sprintf("%s:%s\n", filepath.Join(path, PAGE_FILE), utils.GenerateETag(string(content)))
 
-		err = utils.RenderFiles[interface{}](filepath.Join(path, PAGE_BODY_FILE), g.OutputDir, append(data.AdditionalTemplates, data.Data.Templates...), data.Data.Content, "page")
+		err = utils.RenderFile[interface{}](filepath.Join(path, PAGE_BODY_FILE), g.OutputDir, append(data.AdditionalTemplates, data.Data.Templates...), data.Data.Content, "page")
 		if err != nil {
 			return err
 		}
@@ -501,17 +548,76 @@ func (g *Gox) renderStaticFiles() error {
 	}
 
 	// Rendering .html files returned from functions defined in render.go
-	for _, renderDefault := range RenderList {
+	for _, render := range RenderList {
 		var err error
-		switch fn := renderDefault.Handler.(type) {
-		case func() utils.RenderFilesType:
-			renderType := renderDefault.Handler.(func() utils.RenderFilesType)()
-			err = utils.RenderFiles(filepath.Join(renderDefault.Path, PAGE_FILE), g.OutputDir, renderType.StrArr, renderType.Value, renderType.Str)
-		case func() utils.RenderTemplateType:
-			renderType := renderDefault.Handler.(func() utils.RenderTemplateType)()
-			err = utils.RenderTemplate(filepath.Join(renderDefault.Path, PAGE_FILE), g.OutputDir, renderType.Tmpl, renderType.Value, renderType.Str)
+		switch render.Handler.(type) {
+		case func() utils.RenderFileStatic:
+			fn := render.Handler.(func() utils.RenderFileStatic)()
+			err := utils.RenderFile[interface{}](filepath.Join(render.Path, PAGE_FILE), g.OutputDir, fn.StrArr, fn.Value, fn.Str)
+			if err != nil {
+				return err
+			}
+			content, err := os.ReadFile(filepath.Join(g.OutputDir, render.Path, PAGE_FILE))
+			if err != nil {
+				return err
+			}
+			output += fmt.Sprintf("%s:%s\n", filepath.Join(render.Path, PAGE_FILE), utils.GenerateETag(string(content)))
+
+		case func() utils.RenderFileDynamic:
+			fn := render.Handler.(func() utils.RenderFileDynamic)()
+			err := utils.RenderFile[interface{}](filepath.Join(render.Path, PAGE_FILE), g.OutputDir, fn.StrArr, fn.Value, "")
+			if err != nil {
+				return err
+			}
+			pathAndTag, err := readFileAndGenerateETag(g.OutputDir, filepath.Join(render.Path, PAGE_FILE))
+			if err != nil {
+				return err
+			}
+			output += pathAndTag
+
+			err = utils.RenderFile[interface{}](filepath.Join(render.Path, PAGE_BODY_FILE), g.OutputDir, fn.StrArr, fn.Value, fn.Str)
+			if err != nil {
+				return err
+			}
+			pathAndTag, err = readFileAndGenerateETag(g.OutputDir, filepath.Join(render.Path, PAGE_BODY_FILE))
+			if err != nil {
+				return err
+			}
+			output += pathAndTag
+
+		case func() utils.RenderTemplateStatic:
+			fn := render.Handler.(func() utils.RenderTemplateStatic)()
+			err = utils.RenderTemplate[interface{}](filepath.Join(render.Path, PAGE_FILE), g.OutputDir, fn.Tmpl, fn.Value, fn.Str)
+			pathAndTag, err := readFileAndGenerateETag(g.OutputDir, filepath.Join(render.Path, PAGE_FILE))
+			if err != nil {
+				return err
+			}
+			output += pathAndTag
+
+		case func() utils.RenderTemplateDynamic:
+			fn := render.Handler.(func() utils.RenderTemplateDynamic)()
+			err = utils.RenderTemplate[interface{}](filepath.Join(render.Path, PAGE_FILE), g.OutputDir, fn.Tmpl, fn.Value, "")
+			if err != nil {
+				return err
+			}
+			pathAndTag, err := readFileAndGenerateETag(g.OutputDir, filepath.Join(render.Path, PAGE_FILE))
+			if err != nil {
+				return err
+			}
+			output += pathAndTag
+
+			err = utils.RenderTemplate[interface{}](filepath.Join(render.Path, PAGE_BODY_FILE), g.OutputDir, fn.Tmpl, fn.Value, fn.Str)
+			if err != nil {
+				return err
+			}
+			pathAndTag, err = readFileAndGenerateETag(g.OutputDir, filepath.Join(render.Path, PAGE_BODY_FILE))
+			if err != nil {
+				return err
+			}
+			output += pathAndTag
+
 		default:
-			log.Printf("Unknown function type: %T\n", fn)
+			log.Printf("Unknown function type for: %T\n", render.Handler)
 		}
 
 		if err != nil {
@@ -519,6 +625,17 @@ func (g *Gox) renderStaticFiles() error {
 		}
 	}
 	return nil
+}
+
+func readFileAndGenerateETag(outDir string, filePath string) (string, error) {
+
+	content, err := os.ReadFile(filepath.Join(outDir, filePath))
+	if err != nil {
+		return "", err
+	}
+	output := fmt.Sprintf("%s:%s\n", filePath, utils.GenerateETag(string(content)))
+	return output, nil
+
 }
 
 func walkDirectoryStructure(startDir string) (map[string]map[string][]GoxDir, error) {

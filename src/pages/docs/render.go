@@ -8,7 +8,7 @@ import (
 	"github.com/caleb-sideras/goxstack/src/global"
 )
 
-func Render() utils.RenderTemplateType {
+func Render() utils.RenderTemplateDynamic {
 	parentDocsTemplates := []string{
 		"pages/index.html",
 		"templates/components/nav.html",
@@ -45,5 +45,6 @@ func Render() utils.RenderTemplateType {
 		ActiveTabId: "docs",
 		LargeCards:  []global.LargeCard{},
 	}
-	return utils.RenderTemplateType{markdownDocsContent, parentTmpl, ""}
+	// utils.RenderTemplate("page.html", "./pages/docs/", parentTmpl, markdownDocsContent, "")
+	return utils.RenderTemplateDynamic{markdownDocsContent, parentTmpl, "page"}
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/caleb-sideras/goxstack/gox"
 	"github.com/caleb-sideras/goxstack/src/global"
-	// "github.com/caleb-sideras/goxstack/src/pages/docs"
 	"github.com/caleb-sideras/goxstack/src/server"
 	"github.com/gorilla/mux"
 	"log"
