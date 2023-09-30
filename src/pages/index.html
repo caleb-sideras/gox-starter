@@ -15,14 +15,13 @@
   <link href="/static/css/output.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/themes/prism.min.css" rel="stylesheet" />
-  {{ block "metadata" . }}{{end}}
 </head>
 
 <body class="flex flex-col items-start lg:flex-row bg-background">
   <header class="lg:sticky lg:top-0 lg:left-0">
     {{ block "nav" . }}{{end}}
   </header>
-  <main class="w-full" id="body">
+  <main class="w-full">
     {{ block "page" . }}{{end}}
   </main>
 </body>

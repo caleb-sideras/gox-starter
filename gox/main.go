@@ -18,6 +18,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/caleb-sideras/goxstack/gox/render"
 	"github.com/caleb-sideras/goxstack/gox/utils"
 	"github.com/gorilla/mux"
 )
@@ -196,14 +197,16 @@ func (g *Gox) Build(startDir string, packageDir string) {
 					// prevent edge case for unnecessary import
 					needImport := false
 
-					for _, expFn := range expFns {
+					for expFn, expT := range expFns {
 						if expFn == EXPORTED_RENDER || strings.HasSuffix(expFn, "_") {
 							formatFn := formatDefaultFunction(pkName, expFn, strings.TrimSuffix(expFn, "_"), leafNode, EXPORTED_RENDER)
 							renderFunctions = append(renderFunctions, formatFn)
 							needImport = true
 
 							if expFn == EXPORTED_RENDER {
-								hasValidRender = true
+								if expT == "render.FileStatic" || expT == "render.TemplateStatic" {
+									hasValidRender = true
+								}
 							}
 
 							log.Printf("   - Extracted -> func %s", expFn)
@@ -239,7 +242,7 @@ func (g *Gox) Build(startDir string, packageDir string) {
 					// prevent edge case for unnecessary import
 					needImport := false
 
-					for _, expFn := range expFns {
+					for expFn, _ := range expFns {
 						if expFn == EXPORTED_HANDLE || strings.HasSuffix(expFn, "_") {
 							formatFn := formatDefaultFunction(pkName, expFn, strings.TrimSuffix(expFn, "_"), leafNode, EXPORTED_HANDLE)
 							handleFunctions = append(handleFunctions, formatFn)
@@ -274,7 +277,8 @@ func (g *Gox) Build(startDir string, packageDir string) {
 					if leafPath == "" {
 						leafPath = "/"
 					}
-					indexGroup = append(indexGroup, `"`+leafPath+`"`+" : "+`"`+gd.FilePath+`",`)
+
+					indexGroup = append(indexGroup, fmt.Sprintf(`"%s" : "%s",`, leafPath, gd.FilePath))
 					log.Println("   - Index pair:", leafPath, "->", gd.FilePath)
 
 				case PAGE_FILE:
@@ -352,7 +356,7 @@ func (g *Gox) handleRoutes(r *mux.Router, eTags map[string]string) {
 				}
 				handleRequest(w, r, handlePage, handleIndex)
 
-				log.Println("Path:", pagePath)
+				log.Println("Path:", *pagePath)
 				log.Println("ETag:", eTags[*eTagPath])
 				w.Header().Set("ETag", eTags[*eTagPath])
 				http.ServeFile(w, r, *pagePath)
@@ -408,7 +412,7 @@ func (g *Gox) handleRoutes(r *mux.Router, eTags map[string]string) {
 		log.Println(route.Path + DIR)
 
 		switch route.Handler.(type) {
-		case func() utils.RenderFileStatic, func() utils.RenderTemplateStatic:
+		case func() render.FileStatic, func() render.TemplateStatic:
 			r.HandleFunc(route.Path+"{slash:/?}",
 				func(w http.ResponseWriter, r *http.Request) {
 
@@ -424,34 +428,32 @@ func (g *Gox) handleRoutes(r *mux.Router, eTags map[string]string) {
 					http.ServeFile(w, r, pagePath)
 				},
 			)
-		case func() utils.RenderFileDynamic, func() utils.RenderTemplateDynamic:
+		case func() render.FileDynamic, func() render.TemplateDynamic:
 			r.HandleFunc(route.Path+"{slash:/?}",
 				func(w http.ResponseWriter, r *http.Request) {
-					// why we need dynamic? -> only if fully integrated into GoX Router
-
-					// STATIC -> simply serve the file
-					// DYNAMIC -> should find index (implicitly or explicitly), fixes all our issues, as index is typically used for state that doesnt change
-
-					// if hx-boost is used, implicitly meaning you want to re-direct to a new page, GoX will handle all of the routing (hx-target, hx-swap etc)
-					//    -> Page or Index returned based on index groups and others
-
-					// if hx-get='url?index=true' is used or regular http request, then the index+page is returned
-					// if hx-get or hx-get='url?index=false' is used, then page is returned
-
-					var eTagPath string
-					if utils.IsHtmxRequest(r) {
-						eTagPath = filepath.Join(r.URL.Path, PAGE_BODY_FILE)
-					} else {
-						eTagPath = filepath.Join(r.URL.Path, PAGE_FILE)
-					}
-					pagePath := filepath.Join(g.OutputDir, eTagPath)
 
 					log.Println("- - - - - - - - - - - -")
 					log.Println("Serving static")
-					log.Println("Path:", pagePath)
-					log.Println("ETag:", eTags[eTagPath])
-					w.Header().Set("ETag", eTags[eTagPath])
-					http.ServeFile(w, r, pagePath)
+
+					eStr := ""
+					pStr := ""
+					eTagPath := &eStr
+					pagePath := &pStr
+
+					handlePage := func() {
+						*eTagPath = filepath.Join(r.URL.Path, PAGE_BODY_FILE)
+						*pagePath = filepath.Join(g.OutputDir, *eTagPath)
+					}
+					handleIndex := func() {
+						*eTagPath = filepath.Join(r.URL.Path, PAGE_FILE)
+						*pagePath = filepath.Join(g.OutputDir, *eTagPath)
+					}
+					handleRequest(w, r, handlePage, handleIndex)
+
+					log.Println("Path:", *pagePath)
+					log.Println("ETag:", eTags[*eTagPath])
+					w.Header().Set("ETag", eTags[*eTagPath])
+					http.ServeFile(w, r, *pagePath)
 				},
 			)
 		default:
@@ -466,35 +468,55 @@ func (g *Gox) handleRoutes(r *mux.Router, eTags map[string]string) {
 }
 
 func handleRequest(w http.ResponseWriter, r *http.Request, pageFunc func(), indexFunc func()) {
-	if utils.IsHtmxRequest(r) {
-		log.Println("HX-Request")
 
-		htmxUrl, err := lastElementOfURL(utils.GetHtmxRequestURL(r))
-		if err != nil {
-			log.Println("Error parsing HX-Current-URL:", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		}
-		// yes i know unnecessary, i just want logs
-		if _, ok := IndexList[htmxUrl]; ok {
-			if IndexList[htmxUrl] == IndexList[r.URL.Path] {
-				pageFunc()
-				log.Println("Serving file: page - matching index")
-			} else {
-				indexFunc()
-				// w.Header().Set("HX-Location", "html")
-				// w.Header().Set("HX-Reswap", "innerHTML")
-				log.Println("Serving file: index - new index")
-			}
-		} else {
-			indexFunc()
-			// w.Header().Set("HX-Retarget", "html")
-			// w.Header().Set("HX-Reswap", "innerHTML")
-			log.Println("Serving file: index - no index")
-		}
-	} else {
-		indexFunc()
+	if !utils.IsHtmxRequest(r) {
 		log.Println("Serving file: index - no HX-Request")
+		indexFunc()
+		return
 	}
+
+	log.Println("HX-Request")
+
+	// if not hx-boosted we assume that its a hx-get
+	if !utils.IsHxBoosted(r) {
+		// allow the user to chose between page+index or page
+		if r.URL.Query().Get("index") == "true" {
+			indexFunc()
+		} else {
+			pageFunc()
+			w.Header().Set("HX-Retarget", "main")
+			w.Header().Set("HX-Reswap", "innerHTML")
+		}
+		return
+	}
+
+	// will fail if deeply nested url?
+	htmxUrl, err := lastElementOfURL(utils.GetHtmxRequestURL(r))
+	if err != nil {
+		log.Println("Error parsing HX-Current-URL:", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	// serve page+index if page doesn't have an index group
+	if _, ok := IndexList[htmxUrl]; !ok {
+		log.Println("Serving file: index - no index")
+		indexFunc()
+		return
+	}
+
+	// serve page if has an index group
+	if IndexList[htmxUrl] == IndexList[r.URL.Path] {
+		log.Println("Serving file: page - matching index")
+		pageFunc()
+		w.Header().Set("HX-Retarget", "main")
+		w.Header().Set("HX-Reswap", "innerHTML")
+		return
+	}
+
+	// serve page+index if not matching index group
+	log.Println("Serving file: index - new index")
+	indexFunc()
 }
 
 func lastElementOfURL(rawURL string) (string, error) {
@@ -538,88 +560,90 @@ func (g *Gox) renderStaticFiles() error {
 		output += fmt.Sprintf("%s:%s\n", filepath.Join(path, PAGE_BODY_FILE), utils.GenerateETag(string(content)))
 	}
 
-	file, err := utils.CreateFile(ETAG_FILE, g.OutputDir)
-	if err != nil {
-		return err
-	}
-	_, err = file.Write([]byte(output))
-	if err != nil {
-		return err
-	}
-
 	// Rendering .html files returned from functions defined in render.go
-	for _, render := range RenderList {
+	for _, rd := range RenderList {
 		var err error
-		switch render.Handler.(type) {
-		case func() utils.RenderFileStatic:
-			fn := render.Handler.(func() utils.RenderFileStatic)()
-			err := utils.RenderFile[interface{}](filepath.Join(render.Path, PAGE_FILE), g.OutputDir, fn.StrArr, fn.Value, fn.Str)
+		switch rd.Handler.(type) {
+		case func() render.FileStatic:
+			fn := rd.Handler.(func() render.FileStatic)()
+			err := utils.RenderFile[interface{}](filepath.Join(rd.Path, PAGE_FILE), g.OutputDir, fn.Templates, fn.Content, fn.Name)
 			if err != nil {
 				return err
 			}
-			content, err := os.ReadFile(filepath.Join(g.OutputDir, render.Path, PAGE_FILE))
+			content, err := os.ReadFile(filepath.Join(g.OutputDir, rd.Path, PAGE_FILE))
 			if err != nil {
 				return err
 			}
-			output += fmt.Sprintf("%s:%s\n", filepath.Join(render.Path, PAGE_FILE), utils.GenerateETag(string(content)))
+			output += fmt.Sprintf("%s:%s\n", filepath.Join(rd.Path, PAGE_FILE), utils.GenerateETag(string(content)))
 
-		case func() utils.RenderFileDynamic:
-			fn := render.Handler.(func() utils.RenderFileDynamic)()
-			err := utils.RenderFile[interface{}](filepath.Join(render.Path, PAGE_FILE), g.OutputDir, fn.StrArr, fn.Value, "")
+		case func() render.FileDynamic:
+			fn := rd.Handler.(func() render.FileDynamic)()
+			if _, ok := IndexList[rd.Path]; !ok {
+				return errors.New(fmt.Sprintf("No index for %s dynamic render", rd.Path))
+			}
+			err := utils.RenderFile[interface{}](filepath.Join(rd.Path, PAGE_FILE), g.OutputDir, append([]string{IndexList[rd.Path]}, fn.Templates...), fn.Content, "")
 			if err != nil {
 				return err
 			}
-			pathAndTag, err := readFileAndGenerateETag(g.OutputDir, filepath.Join(render.Path, PAGE_FILE))
+			pathAndTag, err := readFileAndGenerateETag(g.OutputDir, filepath.Join(rd.Path, PAGE_FILE))
 			if err != nil {
 				return err
 			}
 			output += pathAndTag
 
-			err = utils.RenderFile[interface{}](filepath.Join(render.Path, PAGE_BODY_FILE), g.OutputDir, fn.StrArr, fn.Value, fn.Str)
+			err = utils.RenderFile[interface{}](filepath.Join(rd.Path, PAGE_BODY_FILE), g.OutputDir, append([]string{IndexList[rd.Path]}, fn.Templates...), fn.Content, PAGE)
 			if err != nil {
 				return err
 			}
-			pathAndTag, err = readFileAndGenerateETag(g.OutputDir, filepath.Join(render.Path, PAGE_BODY_FILE))
-			if err != nil {
-				return err
-			}
-			output += pathAndTag
-
-		case func() utils.RenderTemplateStatic:
-			fn := render.Handler.(func() utils.RenderTemplateStatic)()
-			err = utils.RenderTemplate[interface{}](filepath.Join(render.Path, PAGE_FILE), g.OutputDir, fn.Tmpl, fn.Value, fn.Str)
-			pathAndTag, err := readFileAndGenerateETag(g.OutputDir, filepath.Join(render.Path, PAGE_FILE))
+			pathAndTag, err = readFileAndGenerateETag(g.OutputDir, filepath.Join(rd.Path, PAGE_BODY_FILE))
 			if err != nil {
 				return err
 			}
 			output += pathAndTag
 
-		case func() utils.RenderTemplateDynamic:
-			fn := render.Handler.(func() utils.RenderTemplateDynamic)()
-			err = utils.RenderTemplate[interface{}](filepath.Join(render.Path, PAGE_FILE), g.OutputDir, fn.Tmpl, fn.Value, "")
-			if err != nil {
-				return err
-			}
-			pathAndTag, err := readFileAndGenerateETag(g.OutputDir, filepath.Join(render.Path, PAGE_FILE))
+		case func() render.TemplateStatic:
+			fn := rd.Handler.(func() render.TemplateStatic)()
+			err = utils.RenderTemplate[interface{}](filepath.Join(rd.Path, PAGE_FILE), g.OutputDir, fn.Template, fn.Content, fn.Name)
+			pathAndTag, err := readFileAndGenerateETag(g.OutputDir, filepath.Join(rd.Path, PAGE_FILE))
 			if err != nil {
 				return err
 			}
 			output += pathAndTag
 
-			err = utils.RenderTemplate[interface{}](filepath.Join(render.Path, PAGE_BODY_FILE), g.OutputDir, fn.Tmpl, fn.Value, fn.Str)
+		case func() render.TemplateDynamic:
+			fn := rd.Handler.(func() render.TemplateDynamic)()
+			if _, ok := IndexList[rd.Path]; !ok {
+				return errors.New(fmt.Sprintf("No index for %s dynamic render", rd.Path))
+			}
+			err = utils.RenderFileTemplate[interface{}](filepath.Join(rd.Path, PAGE_FILE), g.OutputDir, IndexList[rd.Path], template.Must(fn.Template.Clone()), fn.Content, "")
 			if err != nil {
 				return err
 			}
-			pathAndTag, err = readFileAndGenerateETag(g.OutputDir, filepath.Join(render.Path, PAGE_BODY_FILE))
+			pathAndTag, err := readFileAndGenerateETag(g.OutputDir, filepath.Join(rd.Path, PAGE_FILE))
+			if err != nil {
+				return err
+			}
+			output += pathAndTag
+
+			err = utils.RenderFileTemplate[interface{}](filepath.Join(rd.Path, PAGE_BODY_FILE), g.OutputDir, IndexList[rd.Path], fn.Template, fn.Content, PAGE)
+			if err != nil {
+				return err
+			}
+			pathAndTag, err = readFileAndGenerateETag(g.OutputDir, filepath.Join(rd.Path, PAGE_BODY_FILE))
 			if err != nil {
 				return err
 			}
 			output += pathAndTag
 
 		default:
-			log.Printf("Unknown function type for: %T\n", render.Handler)
+			log.Printf("Unknown function type for: %T\n", rd.Handler)
 		}
 
+		file, err := utils.CreateFile(ETAG_FILE, g.OutputDir)
+		if err != nil {
+			return err
+		}
+		_, err = file.Write([]byte(output))
 		if err != nil {
 			return err
 		}
@@ -754,7 +778,7 @@ func getAstVals(path string) (*ast.File, error) {
 	return node, nil
 }
 
-func getExportedFuctions(path string) ([]string, string, error) {
+func getExportedFuctions(path string) (map[string]string, string, error) {
 
 	node, err := getAstVals(path)
 	if err != nil {
@@ -762,14 +786,43 @@ func getExportedFuctions(path string) ([]string, string, error) {
 	}
 
 	var pkName string
-	var expFns []string
+	// var expFns []string
+	expFns := make(map[string]string)
 	ast.Inspect(node, func(n ast.Node) bool {
 		switch x := n.(type) {
 		case *ast.File:
 			pkName = x.Name.Name
+			// case *ast.FuncDecl:
+			// 	if x.Name.IsExported() {
+			// 		expFns = append(expFns, x.Name.Name)
+			// 	}
 		case *ast.FuncDecl:
 			if x.Name.IsExported() {
-				expFns = append(expFns, x.Name.Name)
+				var results []string
+				if x.Type.Results != nil {
+					log.Println(x.Type.Results)
+					// for _, field := range x.Type.Results.List {
+					// 	if ident, ok := field.Type.(*ast.Ident); ok {
+					// 		log.Println("INDENNNNNNNNNNNNNT", ident)
+					// 		results = append(results, ident.Name)
+					// 	} else if _, ok := field.Type.(*ast.SelectorExpr); ok { // For imported types
+					// 		results = append(results, fmt.Sprintf("%s", field.Type))
+					// 	}
+					// }
+					for _, res := range x.Type.Results.List {
+						switch t := res.Type.(type) {
+						case *ast.Ident:
+							results = append(results, t.Name)
+						case *ast.SelectorExpr:
+							results = append(results, fmt.Sprintf("%s.%s", t.X, t.Sel))
+						case *ast.StarExpr:
+							if ident, ok := t.X.(*ast.Ident); ok {
+								results = append(results, ident.Name) // Here we just grab the identifier, you can prefix it with "*" if you want to capture the pointer aspect
+							}
+						}
+					}
+				}
+				expFns[x.Name.Name] = fmt.Sprint(strings.Join(results, ", "))
 			}
 		}
 		return true

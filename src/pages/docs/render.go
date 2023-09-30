@@ -4,13 +4,12 @@ import (
 	"html/template"
 	"log"
 
-	"github.com/caleb-sideras/goxstack/gox/utils"
+	"github.com/caleb-sideras/goxstack/gox/render"
 	"github.com/caleb-sideras/goxstack/src/global"
 )
 
-func Render() utils.RenderTemplateDynamic {
-	parentDocsTemplates := []string{
-		"pages/index.html",
+func Render() render.TemplateDynamic {
+	components := []string{
 		"templates/components/nav.html",
 		"pages/docs/docs.html",
 	}
@@ -24,11 +23,9 @@ func Render() utils.RenderTemplateDynamic {
 		"pages/docs/_markdown/render.md",
 		"pages/docs/_markdown/custom-handling.md",
 		"pages/docs/_markdown/gox-router.md",
-		// "pages/docs/_markdown/client-side-routing.md",
-		// "pages/docs/_markdown/spa-vs-mpa.md",
 	}
 
-	parentTmpl := template.Must(template.ParseFiles(parentDocsTemplates...))
+	parentTmpl := template.Must(template.ParseFiles(components...))
 	var childTmpl string
 
 	for _, mkdnPath := range markdownDocsTemplates {
@@ -36,7 +33,6 @@ func Render() utils.RenderTemplateDynamic {
 		childTmpl += markdownTmpl.Tree.Root.String() + "<hr>"
 	}
 	_, err := parentTmpl.New("markdown").Parse(childTmpl)
-
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -45,6 +41,5 @@ func Render() utils.RenderTemplateDynamic {
 		ActiveTabId: "docs",
 		LargeCards:  []global.LargeCard{},
 	}
-	// utils.RenderTemplate("page.html", "./pages/docs/", parentTmpl, markdownDocsContent, "")
-	return utils.RenderTemplateDynamic{markdownDocsContent, parentTmpl, "page"}
+	return render.TemplateDynamic{parentTmpl, markdownDocsContent}
 }

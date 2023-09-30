@@ -20,7 +20,7 @@
   <!-- Computer View -->
   <div class="hidden lg:flex h-screen bg-surface-2">
     <md-list active-index="0" class="m-3" hx-boost="true">
-      <a href="/" hx-target="#body" hx-swap="innerHTML">
+      <a href="/">
         <md-navigation-tab {{if eq .ActiveTabId "home" }}active{{end}} id="home" label="Home" x-ref="home"
           @click="handleTabClick($event);">
           <span slot="activeIcon" class="material-symbols-outlined pointer-events-none"
@@ -30,7 +30,7 @@
         </md-navigation-tab>
       </a>
 
-      <a href="/example" hx-target="#body" hx-swap="innerHTML">
+      <a href="/example">
         <md-navigation-tab {{if eq .ActiveTabId "example" }}active{{end}} id="example" label="Example" x-ref="example"
           @click="handleTabClick($event);">
           <span slot="activeIcon" class="material-symbols-outlined pointer-events-none"
@@ -40,7 +40,7 @@
         </md-navigation-tab>
       </a>
 
-      <a href="/docs" hx-target="#body" hx-swap="innerHTML">
+      <a href="/docs" hx-target="main" hx-swap="innerHTML">
         <md-navigation-tab {{if eq .ActiveTabId "docs" }}active{{end}} id="docs" label="Docs" x-ref="docs"
           @click="handleTabClick($event);">
           <span slot="activeIcon" class="material-symbols-outlined pointer-events-none"

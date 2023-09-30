@@ -8,6 +8,7 @@ import (
 )
 
 var IndexList = map[string]string{
+	"/docs" : "pages/index.html",
 	"/example" : "pages/index.html",
 	"/" : "pages/index.html",
 	"/tmp" : "pages/index.html",

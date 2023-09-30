@@ -21,50 +21,6 @@ type RenderCustom struct {
 	Handler RenderCustomFunc
 }
 
-// The GoX Router will render and serve the full page
-// - Value: A struct containing the data you want executed in your template.
-// - StrArr: A list of strings, where each string represents represents the path to a .html file you want executed.
-// - Str: A string that indicates the template you want executed. Use "" for no template execution
-type RenderFileStatic struct {
-	Value  interface{}
-	StrArr []string
-	Str    string
-}
-type RenderFileStaticFunc func() RenderFileStatic
-
-// The GoX Router will render both the body or full page and serve based on state
-// - Value: A struct containing the data you want executed in your template.
-// - StrArr: A list of strings, where each string represents represents the path to a .html file you want executed.
-// - Str: A string that indicates the template you want executed. Use "" for no template execution
-type RenderFileDynamic struct {
-	Value  interface{}
-	StrArr []string
-	Str    string
-}
-type RenderFileDynamicFunc func() RenderFileDynamic
-
-// The GoX Router will render and serve the full page
-// - Value: A struct containing the data you want executed in your template.
-// - StrArr: A list of strings, where each string represents represents the path to a .html file you want executed.
-// - Str: A string that indicates the template you want executed. Use "" for no template execution
-type RenderTemplateStatic struct {
-	Value interface{}
-	Tmpl  *template.Template
-	Str   string
-}
-type RenderTemplateStaticFunc func() RenderTemplateStatic
-
-// The GoX Router will render both the body or full page and serve based on state
-// - Value: A struct containing the data you want executed in your template.
-// - StrArr: A list of strings, where each string represents represents the path to a .html file you want executed.
-// - Str: A string that indicates the template you want executed. Use "" for no template execution
-type RenderTemplateDynamic struct {
-	Value interface{}
-	Tmpl  *template.Template
-	Str   string
-}
-type RenderTemplateDynamicFunc func() RenderTemplateDynamic
-
 type DataReturnType struct {
 	PageData
 	Error error
@@ -85,6 +41,18 @@ func RenderTemplate[T any](filePath string, outputDir string, tmpl *template.Tem
 
 	err = WriteToFile(templateExec, file, tmpl, v)
 	return err
+}
+
+func RenderFileTemplate[T any](filePath string, outputDir string, templates string, tmpl *template.Template, v T, templateExec string) error {
+	// if templateExec == "" {
+	parentTmpl := template.Must(template.ParseFiles(templates))
+	tmpl.Tree.Root = parentTmpl.Tree.Copy().Root
+	// } else {
+	// template.Must(tmpl.ParseFiles(templates))
+	// log.Println(tmpl.Tree)
+	// }
+	// log.Println(tmpl.Tree)
+	return RenderTemplate(filePath, outputDir, tmpl, v, templateExec)
 }
 
 func CreateFile(filePath string, outputDir string) (*os.File, error) {
@@ -133,6 +101,14 @@ func IsHtmxRequest(r *http.Request) bool {
 
 func GetHtmxRequestURL(r *http.Request) string {
 	return r.Header.Get("HX-Current-URL")
+}
+
+func IsHxBoosted(r *http.Request) bool {
+	if _, ok := r.Header["HX-Boosted"]; ok {
+		return true
+	} else {
+		return false
+	}
 }
 
 func GenerateETag(content string) string {
