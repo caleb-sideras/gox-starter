@@ -1,0 +1,30 @@
+{{ define "hovercard" }}
+<a href="{{.Link}}"
+  class="group relative inline-flex flex-col-reverse justify-between w-full h-80 p-0 bg-surface-2 hover:bg-secondary-container rounded-3xl transition-colors duration-300 overflow-hidden">
+
+  <!-- Content Container -->
+  <div class="p-4 h-1/3">
+    <!-- Title -->
+    <span class="block text-lg sm:text-2xl font-medium" style="text-decoration-line: none;">{{.Title}}</span>
+    <!-- Description -->
+    <span class="block text-sm sm:text-lg" style="text-decoration-line: none;">{{.Description}}</span>
+  </div>
+
+  <!-- Thumb Container -->
+  <div
+    class="flex w-full h-2/3 items-center rounded-3xl bg-secondary-container hover:bg-surface-2 transition-colors duration-300">
+    <!-- Foreground Image (change the background image URL as required) -->
+    <div class="flex z-10 text-center w-full h-full bg-center m-auto">
+      <div class="rounded-full text-[#657b83] m-auto py-4 px-8 bg-[#b7f397] text-[#042100] font-bold"
+        style="text-decoration-line: none;">
+        {{.ImageText}}
+      </div>
+    </div>
+
+    <!-- Hover Image (change the background image URL as required) -->
+    <div
+      class="absolute rounded-3xl w-full h-2/3 bg-center bg-no-repeat bg-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[url('/static/assets/m3-green-theming-thumbnail.jpg')] ">
+    </div>
+  </div>
+</a>
+{{end}}

@@ -30,9 +30,6 @@ func main() {
 					}),
 			))
 			//
-			// Custom docs handler
-			// r.PathPrefix("/docs/").HandlerFunc(docs.Handler_)
-			//
 			// -----------------------------------------------
 
 			// Serving my static folder

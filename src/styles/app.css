@@ -56,10 +56,12 @@
   --md-sys-color-surface: #FAFDFC;
   --md-sys-color-surface-0: #fdfdf6;
   --md-sys-color-surface-variant: #dfe4d6;
+
   --md-sys-color-inverse-surface: #2f312c;
   --md-sys-color-inverse-on-surface: #f1f1ea;
   --md-sys-color-primary: #386a20;
   --md-sys-color-primary-80: #9cd67d;
+
   --md-sys-color-primary-30: #205107;
   --md-sys-color-primary-20: #0c3900;
   --md-sys-color-on-primary: #fff;
@@ -106,15 +108,15 @@
 
   --md-list-container-color: var(--md-sys-color-surface-2);
 
-  --md-list-item-list-item-container-color: var(--md-sys-color-surface-2);
-  --md-list-item-list-item-container-shape: 999px;
-  --md-list-item-list-item-leading-icon-size: 24px;
-  --md-list-item-list-item-focus-label-text-color: var(--md-sys-color-on-surface);
-  --md-list-item-list-item-focus-leading-icon-icon-color: var(--md-sys-color-on-surface);
-  --md-list-item-list-item-focus-trailing-icon-icon-color: var(--md-sys-color-on-surface);
-  --md-list-item-list-item-label-text-color: var(--md-sys-color-on-surface-2);
-  --md-list-item-list-item-leading-icon-color: var(--md-sys-color-on-surface-2);
-  --md-list-item-list-item-trailing-icon-color: var(--md-sys-color-on-surface-2);
+  --md-list-item-label-text-color: var(--md-sys-color-on-surface-variant);
+  --md-list-item-container-color: var(--md-sys-color-surface-2);
+  --md-list-item-container-shape: 999px;
+  --md-list-item-leading-icon-size: 24px;
+  --md-list-item-focus-label-text-color: var(--md-sys-color-on-surface);
+  --md-list-item-focus-leading-icon-icon-color: var(--md-sys-color-on-surface);
+  --md-list-item-focus-trailing-icon-icon-color: var(--md-sys-color-on-surface);
+  --md-list-item-leading-icon-color: var(--md-sys-color-on-surface-2);
+  --md-list-item-trailing-icon-color: var(--md-sys-color-on-surface-2);
 
   --md-list-item-container-shape: var(--md-list-item-list-item-container-shape);
   /* 

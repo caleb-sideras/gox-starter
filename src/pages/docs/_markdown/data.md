@@ -1,28 +1,28 @@
-# Data Handling
+# Data Handling with GoX
 
-*__GoX__* provides a way to separate data from your __HTML,__ powering re-usuable components with dynamic data fetching 
+*__GoX__* provides a built-in way to separate data from your __HTML__. This enables you to build reusable components and dynamically fetch data.
 
 ## data.go
 
-`data.go` is used to define the templates and content you want to be parsed and populated with your [Page](#pages) at build or request time. There are 2 things *__GoX__* looks for in your `data.go` files.
+The `data.go` file serves as the bridge between your data and [pages](/docs/pages). When building or processing requests, *__GoX__* primarily looks for two components within the `data.go` files:
 
-1. #### [`var Data`](#var-data) 
-2. #### [`func Data`](#func-data)
+1. #### [`var Data`](#static-data-with-var-data) 
+2. #### [`func Data`](#dynamic-data-with-func-data)
 
-## `var Data`
+## Static Data with `var Data`
 
-On build, *__GoX__* searches for an exported variable called `Data` with the following type outlined below.
+During the build process, *__GoX__* scouts for an exported variable named `Data` of a predefined type:
 
 ```go
-// .gox/utils
+// .gox/data
 
-type PageData struct {
+type Page struct {
 	Content   interface{}
 	Templates []string
 }
 ```
 
-*__GoX__* will populate your page with the data from __Content__ and parse your page with your defined __Templates__. This will result in a static __HTML__ page being rendered.
+With the data from `Content` and the templates listed in `Templates`, *__GoX__* populates and parses your page, producing a static __HTML__ output.
 
 ### Example:
 
@@ -73,7 +73,7 @@ type Card struct {
 }
 
 // Exported variable used at build time
-var Data utils.PageData = utils.PageData{
+var Data data.Page = data.Page{
   Content:  Card{
     Title: "Hello World",
     Description: "This is a test!"
@@ -84,12 +84,12 @@ var Data utils.PageData = utils.PageData{
 }
 ```
 
-### Resolves to:
-1. Path: *__/home__*  
-2. File: `index.html` (1) &larr; `page.html` (2) &larr; `data.go` (2)
+### This resolves to the following:
+1. URL Path: *__/home__*  
+2. Render Hierarchy: `index.html` (1) &larr; `page.html` (2) &larr; `data.go` (2)
 ```html
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <body>
   <h1>Hello World</h1>
@@ -99,9 +99,21 @@ var Data utils.PageData = utils.PageData{
 </html>	
 ```
 
-## `func Data`
+## Dynamic Data with `func Data`
 
-If your page has dynamic data simply define `func Data`. This function runs per request and is used with your [Pages](#pages), with its return value being used to populate your page.
+For content that is dynamic and fetched per-request, *__GoX__* offers `func Data` with a specific return type:
+
+```go
+// .gox/data
+
+type PageReturn struct {
+	Page
+	Error error
+}
+```
+\
+As of now, if an `Error` arises, *__GoX__* communicates it directly to the client.
+
 
 ```go
 type Article struct {
@@ -109,16 +121,14 @@ type Article struct {
 	Title string `db:"title" json:"title"`
 }
 
-func Data(w http.ResponseWriter, r *http.Request) any {
+func Data(w http.ResponseWriter, r *http.Request) PageReturn  {
 	// Assuming you're already connected to a DB 
 	vars := mux.Vars(r)
 	articleID := vars["articleID"]
 
-	var article Article
-	err := db.Get(&article, "SELECT id, title FROM articles WHERE id = $1", articleID)
-	// Handle if err
+  var article Article
+  _ := db.Get(&article, "SELECT id, title FROM articles WHERE id = $1", articleID)
 
-	// Must return data
-	return article
+  return data.PageReturn{data.Page{article, ""}, nil}
 }
 ```

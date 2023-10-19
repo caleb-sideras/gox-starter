@@ -1,13 +1,13 @@
-# Index
+# Index: Shared UI and State
 
 *__GoX__* provides a way to have UI that is shared between multiple pages
 
 ## index.html
 
-On navigation, if your desired route is within your current `index.html` group, it will preserve state, remain interactive, and not re-render. Layouts can also be nested.
+On navigation, routes that have the same `index.html` will preserve state, remain interactive, and not refresh the browser.
 
-
-* Consider the following structure:
+\
+Consider this directory structure:
 ```bash
 app                  (1)
  ├─ index.html       
@@ -15,25 +15,21 @@ app                  (1)
     ├─ page.html     
     └─ about         (3)
        ├─ index.html 
-       ├─ page.html  
-       └─ data.go    
+       └─ page.html  
 ```
 
-- It resolves to:
+\
+Which resolves to:
 
-1. *__/home__*: `index.html` (1) &larr; `page.html` (2)
+1. *__/home__* &rarr; `index.html` (1) &larr; `page.html` (2)
 
-2. *__/home/about__*: `index.html` (3) &larr; `page.html` (3) &larr; `data.go` (3)
+2. *__/home/about__* &rarr; `index.html` (3) &larr; `page.html` (3)
 
-You can define a index by creating an `index.html` file and including *template* or *block* tags that will be populated later by a route. __GoX__ by default supports dynamic updating of the __body__ and __metadata__. Simply add a `page.html` and `metadata.html` to your desired route and populate it with your data.
+To establish a shared UI, create an `index.html` file and add a "page" *template* or *block* tag. Depending on the route navigated to, appropriate [pages](/docs/pages) will be populated. Additionally, custom *template* or *block* tags can be added and later populated by your routes [`data.go`](/docs/data) file. 
 
 ```html
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-  {{`{{ block 'metadata' . }}`}} {{`{{end}}`}}
-</head>
+<html>
 
 <body>
   {{`{{ block 'page' . }}`}} {{`{{end}}`}}
@@ -42,10 +38,7 @@ You can define a index by creating an `index.html` file and including *template*
 </html>
 ```
 
-
-
-When using your own *template* or *block* tags, simply include the relavent filepath in your respective `data.go` file. See below:
-
+When incorporating custom *template* or *block* tags, ensure you link the relevant filepath in the associated `data.go` file. For instance:
 
 - index.html
 ```html
@@ -56,7 +49,7 @@ When using your own *template* or *block* tags, simply include the relavent file
 
 - data.go
 ```go
-var Data utils.PageData = utils.PageData{
+var Data data.Page = data.Page{
 	Templates: []string{
   	"templates/nav.html",
   }

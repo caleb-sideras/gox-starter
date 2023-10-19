@@ -1,0 +1,26 @@
+package router
+
+import (
+	"html/template"
+	"log"
+
+	"github.com/caleb-sideras/goxstack/gox/render"
+	"github.com/caleb-sideras/goxstack/src/global"
+	"github.com/caleb-sideras/goxstack/src/pages/docs"
+)
+
+func Render() render.DynamicT {
+	parentTmpl := template.Must(template.ParseFiles("templates/components/nav.html"))
+	childTmpl := template.Must(global.MarkdownToHTML("pages/docs/_markdown/router.md"))
+
+	_, err := parentTmpl.New("page").Parse(childTmpl.Tree.Root.String())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	markdownDocsContent := docs.DocsData{
+		ActiveTabId:  "docs",
+		ActiveDocsId: "router",
+	}
+	return render.DynamicT{parentTmpl, markdownDocsContent}
+}

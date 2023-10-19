@@ -1,7 +1,7 @@
 package home
 
 import (
-	"github.com/caleb-sideras/goxstack/gox/utils"
+	"github.com/caleb-sideras/goxstack/gox/data"
 	"net/http"
 )
 
@@ -15,11 +15,11 @@ var Templates []string = []string{
 	"templates/components/card.html",
 }
 
-var data utils.PageData = utils.PageData{
+var pageData data.Page = data.Page{
 	Content:   Content,
 	Templates: Templates,
 }
 
-func Data(w http.ResponseWriter, r *http.Request) utils.DataReturnType {
-	return utils.DataReturnType{data, nil}
+func Data(w http.ResponseWriter, r *http.Request) data.PageReturn {
+	return data.PageReturn{pageData, nil}
 }

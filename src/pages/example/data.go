@@ -1,6 +1,8 @@
 package example
 
-import "github.com/caleb-sideras/goxstack/gox/utils"
+import (
+	"github.com/caleb-sideras/goxstack/gox/data"
+)
 
 var Content ExampleContent = ExampleContent{
 	ActiveTabId: "example",
@@ -11,7 +13,7 @@ var Templates []string = []string{
 	"pages/example/_components/todo_ssr.html",
 }
 
-var Data utils.PageData = utils.PageData{
+var Data data.Page = data.Page{
 	Content:   Content,
 	Templates: Templates,
 }

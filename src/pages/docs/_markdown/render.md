@@ -1,48 +1,58 @@
-# Custom Rendering
+# Custom Rendering with GoX
 
-GoX provides an easy way to render & serve your page and html partials
-
+GoX supports bespoke rendering processes for routes, ensuring flexibility and control over your application's responses.
 
 ## render.go
 
-*__GoX__* looks for 2 types of functions in `render.go` then runs them at build-time.
+In `render.go` *__GoX__* specifically searches for two function types and executes them at build time:
 
 1. #### [`func Render`](#func-render)
 2. #### [`func SubRoute_`](#func-subroute-)
 
-Both of these functions should either return filepaths or template objects for rendering. See return types below:
+For both functions, GoX expects specific return types:
 
-- FileRender: Render HTML from filepaths
+### Dynamic Rendering
+Renders __HTML__ and integrates it with the [GoX router](#gox-router). Your page will be grouped and parsed with the closest `index.html` in your directory.
+
 ```go
-// - Data: A struct containing the data you want executed in your template
-// - StrArr: A list of strings, where each string represents represents the path to a .html file you want executed
-// - Str: A string that indicates the template you want executed. Use "" for no template execution
-type RenderFilesType struct {
-	Data  interface{}
-	StrArr []string
-	Str    string
+type DynamicF struct {
+	Templates []string            // Paths to the .html files intended for execution
+	Content   interface{}         // Data to be executed within your template
+}
+
+type DynamicT struct {
+	Template *template.Template   // A single template object
+	Content  interface{}          // Data to be executed within your template
 }
 ```
 
-- Template: Render HTML from a template object  
+### Static Rendering 
+This approach renders __HTML__ which will be served consistently upon every request.
+
 ```go
-// - Data: A struct containing the data you want executed in your template
-// - Tmpl: A *template.Template object
-// - Str: A string that indicates the template you want executed. Use "" for no template execution
-type RenderTemplateType struct {
-	Data interface{}
-	Tmpl  *template.Template
-	Str   string
+type StaticF struct {
+	Templates []string            // Paths to the .html files intended for execution
+	Content   interface{}         // Data to be used within your template
+	Name      string              // Name of the desired template. If no execution is needed, use ""
+}
+
+type StaticT struct {
+	Template *template.Template   // A single template object
+	Content  interface{}          // Data to be used within your template
+	Name     string               // Name of the desired template. If no execution is needed, use ""
 }
 ```
 
-\
-Consider the following folder structure for the documentation below:
+
+
+### Example
+
+For context, consider the folder hierarchy below:
+
 ```bash
 app
  ├─ index.html
  ├─ example
- │  ├─ page.md
  │  └─ render.go
  └─ templates
     └─ article.html
@@ -50,15 +60,13 @@ app
 
 ## `func Render`
 
-Typically used when [Pages](#pages) isn't sufficent for your route rendering process, necessitating your own implementation. This does override [Pages](#pages), so the [*__GoX Router__*](#gox-router) will simply serve the output.
+It acts as your route handler, superseding any existing `page.html` within your route.
 
 - Below resolves to
 __*/example*__
 
 ```go
-// NOTE - The functionality below can be done through Pages and Data
-
-func Render() utils.RenderFilesType {
+func Render() render.StaticF {
 	// Assuming you're already connected to a DB 
 	vars := mux.Vars(r)
 	articleID := vars["articleID"]
@@ -67,34 +75,34 @@ func Render() utils.RenderFilesType {
 	err := db.Get(&article, "SELECT id, title FROM articles WHERE id = $1", articleID)
 
   files := []string{"app/index.html", "templates/article.html"}
-	return utils.RenderFileType{article, files..., ""}
+	return render.StaticF{files..., article, ""}
 }
 ```
 
 ## `func SubRoute_`
 
-`'Subroute'` is a placeholder for your own function name. Postfixing a function with an underscore defines a static sub-route, with the name of the function resolving to the path. These should primarily be used for serving html partials.
+Appending an underscore to a function declares it as a sub-route. The function's name is then treated as the path segment, with camel-casing being translated into hyphen-separated words. This can be harnessed for both full pages and __HTML__ partials.
 
 - Below resolves to
-__*/example/addarticle*__
+__*/example/add-article*__
 
 ```go
-func AddArticle_() utils.RenderFilesType {
-	return utils.RenderFilesType{ Article{"Article", "Description"}, []string{"templates/article.html"}, "article" }
+func AddArticle_() render.StaticF {
+	return render.StaticF{[]string{"templates/article.html"}, Article{"Article", "Description"}, "article"}
 }
 ```
 
-\
-Subsequently, any folder post-fixed with an underscore will use the parent folder in the route
+
+### Directory Naming Conventions
+
+It's important to note that any folder named with an ending underscore will utilize the parent directory in its route.
+
 ```bash
 app
  ├─ index.html
- ├─ example_
- │  ├─ page.md
- │  └─ render.go
- └─ templates
-    └─ article.html
+ └─ example_
+    └─ render.go
 ```
 
 \
-This sub-route will resolve to __*/addarticle*__  
+The above sub-route would be accessible at __*/add-article*__  

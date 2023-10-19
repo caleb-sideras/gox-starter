@@ -15,6 +15,9 @@ module.exports = {
       fontFamily: {
         sans: ['Roboto', 'sans-serif'],
       },
+      backgroundImage: {
+        'rain-flower': 'https://lh3.googleusercontent.com/wle2URFsybXPDp10jnrUay6k4sw14Hg8Ajb91djUCIHa1Z7hBDFAbjPhnm-mCmjeoI-6_FPQYW6G9H2Z8kL5LfXfx_FpDlAS3DZX4wZjrbEEe2arzQ=w2400-rj',
+      }, 
       backgroundColor: customColors,
       textColor: customColors,
       borderColor: customColors,

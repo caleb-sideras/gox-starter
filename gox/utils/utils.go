@@ -11,22 +11,10 @@ import (
 	"strings"
 )
 
-type PageData struct {
-	Content   interface{}
-	Templates []string
-}
-
 type RenderCustomFunc func() error
 type RenderCustom struct {
 	Handler RenderCustomFunc
 }
-
-type DataReturnType struct {
-	PageData
-	Error error
-}
-
-type DataReturnFunc func(w http.ResponseWriter, r *http.Request) DataReturnType
 
 func RenderFile[T any](filePath string, outputDir string, templates []string, v T, templateExec string) error {
 	tmpl := template.Must(template.ParseFiles(templates...))
@@ -104,7 +92,7 @@ func GetHtmxRequestURL(r *http.Request) string {
 }
 
 func IsHxBoosted(r *http.Request) bool {
-	if _, ok := r.Header["HX-Boosted"]; ok {
+	if r.Header.Get("HX-Boosted") == "true" {
 		return true
 	} else {
 		return false
@@ -113,7 +101,7 @@ func IsHxBoosted(r *http.Request) bool {
 
 func GenerateETag(content string) string {
 	hash := md5.Sum([]byte(content))
-	return fmt.Sprintf("%x", hash)
+	return fmt.Sprintf(`"%x"`, hash)
 }
 
 // StringSet represents a collection of unique strings.

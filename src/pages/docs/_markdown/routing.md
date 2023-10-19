@@ -1,6 +1,6 @@
 # Routing Fundamentals
 
-The skeleton of every application is routing. This page will introduce you to the fundamental concepts of routing for the web and how to handle routing in Gox.
+The skeleton of every application is routing. This page will introduce you to the fundamental concepts of routing in __GoX__.
 
 ## Folder Structure
 
@@ -52,7 +52,7 @@ The skeleton of every application is routing. This page will introduce you to th
 GoX uses a file-system based router where:
 
 - **Folders** are used to define routes. A route is a single path of nested folders, following the file-system hierarchy from the **root folder** down to a final **leaf folder**
-- **Files** are used to create UI and handle behavior for a route segment.
+- **Files** are used to create UI and drive the behavior associated with a particular route segment.
 
 ## Nested Routes
 
@@ -73,3 +73,24 @@ GoX provides a set of special files to create UI with specific behavior in neste
 - `data.go` Templates and page content needed to populate the UI
 - `handle.go` Handlers unique to the route  
 - `render.go` Render partials unique to the route
+
+## Folder Conventions
+
+
+### Underscore Postfix
+
+Folders ending with an underscore will utilize the parent directory in its route. For example:
+
+```bash
+app
+ ├─ index.html
+ └─ home_
+    └─ page.html
+```
+
+\
+The above route would be accessible at the root &larr; __*/*__  
+
+### Underscore Prefix
+
+Folders starting with an underscore will simply be ignored by *__GoX__*

@@ -1,17 +1,17 @@
 package gox
 
 import (
-	"github.com/caleb-sideras/goxstack/gox/utils"
+	"github.com/caleb-sideras/goxstack/gox/data"
 	"net/http"
 )
 
 type PageData struct {
-	Data                utils.PageData
+	Data                data.Page
 	AdditionalTemplates []string
 }
 
-type RenderData struct {
-	Data                utils.DataReturnFunc
+type DataRender struct {
+	Data                data.PageFunc
 	AdditionalTemplates []string
 }
 
