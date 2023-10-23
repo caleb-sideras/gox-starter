@@ -65,12 +65,24 @@ const (
 )
 
 var FILE_CHECK_LIST = map[string]bool{
-	DATA_FILE:     true,
-	RENDER_FILE:   true,
-	HANDLE_FILE:   true,
-	INDEX_FILE:    true,
-	PAGE_FILE:     true,
-	METADATA_FILE: true,
+	DATA_FILE:   true,
+	RENDER_FILE: true,
+	HANDLE_FILE: true,
+	INDEX_FILE:  true,
+	PAGE_FILE:   true,
+	// METADATA_FILE: true,
+}
+
+var FILE_HTML_CHECK_LIST = map[string]bool{
+	INDEX_FILE: true,
+	PAGE_FILE:  true,
+	// METADATA_FILE: true,
+}
+
+var FILE_GO_CHECK_LIST = map[string]bool{
+	DATA_FILE:   true,
+	RENDER_FILE: true,
+	HANDLE_FILE: true,
 }
 
 type GoxDir struct {
@@ -146,7 +158,7 @@ func (g *Gox) Build(startDir string, packageDir string) {
 		}
 
 		ndir := removeDirWithUnderscorePostfix(dir)
-		leafNode := filepath.Base(ndir)
+		// leafNode := filepath.Base(ndir)
 		leafPath := ndir[5:]
 
 		// GO
@@ -258,7 +270,7 @@ func (g *Gox) Build(startDir string, packageDir string) {
 
 				for expFn, _ := range expFns {
 					if expFn == EXPORTED_HANDLE || strings.HasSuffix(expFn, "_") {
-						formatFn := formatDefaultFunction(pkName, expFn, strings.TrimSuffix(expFn, "_"), leafNode, EXPORTED_HANDLE)
+						formatFn := formatDefaultFunction(pkName, expFn, strings.TrimSuffix(expFn, "_"), leafPath, EXPORTED_HANDLE)
 						handleFunctions = append(handleFunctions, formatFn)
 						needImport = true
 
@@ -369,7 +381,7 @@ func (g *Gox) handleRoutes(r *mux.Router, eTags map[string]string) {
 					*eTagPath = filepath.Join(r.URL.Path, PAGE_BODY_FILE)
 					*pagePath = filepath.Join(g.OutputDir, *eTagPath)
 					w.Header().Set("HX-Retarget", "main")
-					w.Header().Set("HX-Reswap", "innerHTML")
+					w.Header().Set("HX-Reswap", "innerHTML transition:true")
 				}
 				handleIndex := func() {
 					log.Println("Full-Page")
@@ -398,14 +410,29 @@ func (g *Gox) handleRoutes(r *mux.Router, eTags map[string]string) {
 	}
 
 	log.Println("---------------------DATA HANDLERS-----------------------")
+	dataTmpls := map[string]*template.Template{}
 	for route, data := range DataList {
-		log.Println(route)
+
+		tmpl := template.Must(template.ParseFiles(data.Index))
+		tmpl2 := template.Must(template.ParseFiles(data.Page))
+		_, err := tmpl.New("page").Parse(tmpl2.Tree.Root.String())
+
+		if err != nil {
+			panic(err)
+		}
+		dataTmpls[route] = tmpl
+		// loop variable capture
+		currRoute := route
+
+		log.Println(currRoute)
 		r.HandleFunc(route+"{slash:/?}",
 
 			func(w http.ResponseWriter, r *http.Request) {
 
 				log.Println("- - - - - - - - - - - -")
 				log.Println("Fetching Data...")
+
+				tmpl := template.Must(dataTmpls[currRoute].Clone())
 				funcReturn := data.Data(w, r)
 
 				// cannot get ETag from data because we are sending full and partials
@@ -413,9 +440,15 @@ func (g *Gox) handleRoutes(r *mux.Router, eTags map[string]string) {
 					http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				}
 
-				tmplPaths := append(data.AdditionalTemplates, funcReturn.Templates...)
-				tmpl, err := template.ParseFiles(tmplPaths...)
-				// inefficient - best to parse on run to a map -> {"route":template.Template} or something
+				if len(funcReturn.Templates) > 0 {
+					_, err = tmpl.ParseFiles(funcReturn.Templates...)
+					if err != nil {
+						panic(err)
+					}
+				}
+
+				_, err = tmpl.ParseFiles(funcReturn.Templates...)
+
 				if err != nil {
 					log.Println("Error Parsing Files")
 					http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -519,7 +552,7 @@ func (g *Gox) handleRoutes(r *mux.Router, eTags map[string]string) {
 	}
 	log.Println("----------------------CUSTOM HANDLERS----------------------")
 	for _, route := range HandleList {
-		log.Println(route.Path)
+		log.Println(route.Path + DIR)
 		r.HandleFunc(route.Path+"{slash:/?}", route.Handler)
 	}
 }
@@ -592,7 +625,22 @@ func (g *Gox) renderStaticFiles() error {
 
 	// Rendering routes defined with page.html
 	for path, data := range PagesList {
-		err := utils.RenderFile[interface{}](filepath.Join(path, PAGE_FILE), g.OutputDir, append(data.AdditionalTemplates, data.Data.Templates...), data.Data.Content, "")
+		indexTmpl := template.Must(template.ParseFiles(data.Index))
+		pageTmpl := template.Must(template.ParseFiles(data.Page))
+
+		_, err := indexTmpl.New("page").Parse(pageTmpl.Tree.Root.String())
+		if err != nil {
+			return err
+		}
+
+		if len(data.Data.Templates) > 0 {
+			_, err = indexTmpl.ParseFiles(data.Data.Templates...)
+			if err != nil {
+				return err
+			}
+		}
+
+		err = utils.RenderTemplate[interface{}](filepath.Join(path, PAGE_FILE), g.OutputDir, template.Must(indexTmpl.Clone()), data.Data.Content, "")
 		if err != nil {
 			return err
 		}
@@ -602,7 +650,8 @@ func (g *Gox) renderStaticFiles() error {
 		}
 		output += fmt.Sprintf("%s:%s\n", filepath.Join(path, PAGE_FILE), utils.GenerateETag(string(content)))
 
-		err = utils.RenderFile[interface{}](filepath.Join(path, PAGE_BODY_FILE), g.OutputDir, append(data.AdditionalTemplates, data.Data.Templates...), data.Data.Content, "page")
+		// page-body.html
+		err = utils.RenderTemplate[interface{}](filepath.Join(path, PAGE_BODY_FILE), g.OutputDir, template.Must(indexTmpl.Clone()), data.Data.Content, PAGE)
 		if err != nil {
 			return err
 		}
@@ -634,7 +683,15 @@ func (g *Gox) renderStaticFiles() error {
 			if _, ok := IndexList[rd.Path]; !ok {
 				return errors.New(fmt.Sprintf("No index for %s dynamic render", rd.Path))
 			}
-			err := utils.RenderFile[interface{}](filepath.Join(rd.Path, PAGE_FILE), g.OutputDir, append([]string{IndexList[rd.Path]}, fn.Templates...), fn.Content, "")
+
+			indexTmpl := template.Must(template.ParseFiles(IndexList[rd.Path]))
+			_, err := indexTmpl.New("page").ParseFiles(fn.Templates...)
+			if err != nil {
+				return err
+			}
+
+			err = utils.RenderTemplate[interface{}](filepath.Join(rd.Path, PAGE_FILE), g.OutputDir, indexTmpl, fn.Content, "")
+			// err := utils.RenderFile[interface{}](filepath.Join(rd.Path, PAGE_FILE), g.OutputDir, append([]string{IndexList[rd.Path]}, fn.Templates...), fn.Content, "")
 			if err != nil {
 				return err
 			}
@@ -644,7 +701,8 @@ func (g *Gox) renderStaticFiles() error {
 			}
 			output += pathAndTag
 
-			err = utils.RenderFile[interface{}](filepath.Join(rd.Path, PAGE_BODY_FILE), g.OutputDir, append([]string{IndexList[rd.Path]}, fn.Templates...), fn.Content, PAGE)
+			err = utils.RenderTemplate[interface{}](filepath.Join(rd.Path, PAGE_FILE), g.OutputDir, indexTmpl, fn.Content, PAGE)
+			// err = utils.RenderFile[interface{}](filepath.Join(rd.Path, PAGE_BODY_FILE), g.OutputDir, append([]string{IndexList[rd.Path]}, fn.Templates...), fn.Content, PAGE)
 			if err != nil {
 				return err
 			}
@@ -668,7 +726,7 @@ func (g *Gox) renderStaticFiles() error {
 			if _, ok := IndexList[rd.Path]; !ok {
 				return errors.New(fmt.Sprintf("No index for %s dynamic render", rd.Path))
 			}
-			err = utils.RenderFileTemplate[interface{}](filepath.Join(rd.Path, PAGE_FILE), g.OutputDir, IndexList[rd.Path], template.Must(fn.Template.Clone()), fn.Content, "")
+			err = utils.RenderFileTemplateIndex[interface{}](filepath.Join(rd.Path, PAGE_FILE), g.OutputDir, IndexList[rd.Path], fn.Templates, template.Must(fn.Template.Clone()), fn.Content)
 			if err != nil {
 				return err
 			}
@@ -678,7 +736,7 @@ func (g *Gox) renderStaticFiles() error {
 			}
 			output += pathAndTag
 
-			err = utils.RenderFileTemplate[interface{}](filepath.Join(rd.Path, PAGE_BODY_FILE), g.OutputDir, IndexList[rd.Path], fn.Template, fn.Content, PAGE)
+			err = utils.RenderFileTemplatePage[interface{}](filepath.Join(rd.Path, PAGE_BODY_FILE), g.OutputDir, fn.Templates, fn.Template, fn.Content)
 			if err != nil {
 				return err
 			}
@@ -784,35 +842,53 @@ func formatCustomFunction(pkName string, fnName string) string {
 }
 
 func formatData(pkName string, leafPath string, dirHtmlFiles []GoxDir) string {
-	var additionalTemplates []string
 	// root case
 	if leafPath == "" {
 		leafPath = "/"
 	}
+
+	var page string
+	var index string
 	for _, file := range dirHtmlFiles {
-		if file.FileType == INDEX_FILE {
-			additionalTemplates = append([]string{`"` + file.FilePath + `",`}, additionalTemplates...)
-		} else {
-			additionalTemplates = append(additionalTemplates, `"`+file.FilePath+`",`)
+		switch file.FileType {
+		case INDEX_FILE:
+			index = file.FilePath
+		case PAGE_FILE:
+			page = file.FilePath
 		}
 	}
-	return `"` + leafPath + `": {Data:` + pkName + `.` + "Data" + `, AdditionalTemplates: []string{` + strings.Join(additionalTemplates, " ") + `},},`
+
+	// duplicate check
+	if page == "" || index == "" {
+		log.Fatalf("No page.html or index.html present in path: %s", leafPath)
+	}
+
+	return `"` + leafPath + `": {Data:` + pkName + `.` + "Data" + `, Index: "` + index + `", Page: "` + page + `"},`
 }
 
 func formatPage(leafPath string, dirHtmlFiles []GoxDir) string {
-	var additionalTemplates []string
 	// root case
 	if leafPath == "" {
 		leafPath = "/"
 	}
+
+	var page string
+	var index string
 	for _, file := range dirHtmlFiles {
-		if file.FileType == INDEX_FILE {
-			additionalTemplates = append([]string{`"` + file.FilePath + `",`}, additionalTemplates...)
-		} else {
-			additionalTemplates = append(additionalTemplates, `"`+file.FilePath+`",`)
+		switch file.FileType {
+		case INDEX_FILE:
+			index = file.FilePath
+		case PAGE_FILE:
+			page = file.FilePath
 		}
 	}
-	return `"` + leafPath + `": {Data: EmptyPageData,  AdditionalTemplates: []string{` + strings.Join(additionalTemplates, " ") + `},},`
+
+	// duplicate check
+	if page == "" || index == "" {
+		log.Fatalf("No page.html or index.html present in path: %s", leafPath)
+	}
+
+	return `"` + leafPath + `": {Data: EmptyPageData, Index: "` + index + `", Page: "` + page + `"},`
 }
 
 func getAstVals(path string) (*ast.File, error) {

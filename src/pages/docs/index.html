@@ -16,6 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/themes/prism.min.css" rel="stylesheet" />
   <link href="/static/css/prism.css" rel="stylesheet" />
+  <meta name="htmx-config" content='{"globalViewTransitions":"true"}'>
 </head>
 
 <body class="flex flex-col items-start lg:flex-row bg-background">
@@ -102,7 +103,7 @@
     <div class="flex flex-col lg:ml-drawer-width w-100">
 
       <script src="/static/js/prism.js"></script>
-      <main id="markdown" class="gap-2 md:px-8 px-4 pb-4">
+      <main id="markdown" class="gap-2 md:px-8 px-4 pb-4 slide-up">
         {{ block "page" . }}{{end}}
       </main>
 

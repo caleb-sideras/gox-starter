@@ -21,8 +21,9 @@ type DynamicF struct {
 }
 
 type DynamicT struct {
-	Template *template.Template   // A single template object
-	Content  interface{}          // Data to be executed within your template
+	Templates []string            // Paths to the .html files intended for execution
+	Content   interface{}         // Data to be executed within your template
+	Template  *template.Template  // Template object used for your page
 }
 ```
 

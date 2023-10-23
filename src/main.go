@@ -20,24 +20,15 @@ func main() {
 			// Example - middleware
 			r.Use(server.Middleware)
 
-			// ---- Define your own custom handlers here ----
-			//
-			// Example - rolling your own Auth
-			r.Handle("/protected", server.AuthenticationMiddleware(
-				http.HandlerFunc(
-					func(w http.ResponseWriter, r *http.Request) {
-						log.Println("You are authenticated!")
-					}),
-			))
-			//
-			// -----------------------------------------------
-
 			// Serving my static folder
 			http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("../static/"))))
+
 			// Create a new instance of gox
 			g := gox.NewGox(global.HTML_OUT_DIR)
+
 			// Build your GoX app -> finds your handlers, creates your routes & renders static html
 			g.Build(global.APP_DIR, global.PROJECT_PACKAGE_DIR)
+
 			// Run your GoX app -> binds handlers to routes
 			g.Run(r, ":8000", global.HTML_SERVE_PATH)
 
@@ -45,9 +36,9 @@ func main() {
 			// Build your own development env
 			log.Println("Dev not implemented.")
 		default:
-			log.Println("Invalid argument. Use 'build' or 'dev'.")
+			log.Println("Invalid argument. Use 'build' or 'run'.")
 		}
 	} else {
-		log.Println("Please provide an argument: 'build' or 'dev'.")
+		log.Println("Please provide an argument: 'build' or 'run'.")
 	}
 }

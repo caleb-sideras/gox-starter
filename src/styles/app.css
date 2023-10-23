@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Google';
+  src: url("https://fonts.gstatic.com/s/googlesanstext/v21/5aUu9-KzpRiLCAt4Unrc-xIKmCU5qEp2i0VBuxM.woff2");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'Google-Bold';
+  src: url("https://fonts.gstatic.com/s/googlesanstext/v21/5aUp9-KzpRiLCAt4Unrc-xIKmCU5oLlVnmhjtjm4DZw.woff2");
+  font-weight: bold;
+}
 
 .dark {
   --md-sys-color-on-surface-variant-2: linear-gradient(0deg, rgba(196, 200, 187, .08), rgba(196, 200, 187, .08));
@@ -43,7 +54,8 @@
 }
 
 :root {
-
+  font-family: 'Google', sans-serif;
+  --md-ref-typeface-plain: 'Google';
   --md-sys-color-on-surface-variant-2: linear-gradient(0deg, rgba(67, 73, 62, .08), rgba(67, 73, 62, .08));
   --md-sys-color-on-surface-variant-4: linear-gradient(0deg, rgba(67, 73, 62, .12), rgba(67, 73, 62, .12));
   --md-sys-color-on-surface-2: linear-gradient(0deg, rgba(26, 28, 24, .08), rgba(26, 28, 24, .08)), var(--md-sys-color-secondary-container);
@@ -142,7 +154,7 @@
 #markdown h4,
 #markdown h5,
 #markdown h6 {
-  @apply font-medium;
+  @apply font-bold;
 }
 
 #markdown h1 {
@@ -212,4 +224,47 @@
 
 hr {
   @apply mt-[48px] bg-[#d9e7cb] h-0.5
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-from-right {
+  from {
+    transform: translateX(90px);
+  }
+}
+
+@keyframes slide-to-left {
+  to {
+    transform: translateX(-90px);
+  }
+}
+
+@keyframes slide-from-bottom {
+  from {
+    transform: translateY(15px);
+  }
+}
+
+.slide-up {
+  view-transition-name: slide-up;
+}
+
+::view-transition-old(slide-up) {
+  animation: 90ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
+}
+
+::view-transition-new(slide-up) {
+  animation: 210ms cubic-bezier(0, 0, 0.2, 1) 45ms both fade-in,
+    300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-bottom;
 }

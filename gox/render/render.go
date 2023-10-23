@@ -3,8 +3,8 @@ package render
 import "html/template"
 
 // The GoX Router will render and serve the full page
-// - Value: A struct containing the data you want executed in your template.
-// - Content: A list of strings, where each string represents represents the path to a .html file you want executed.
+// - Templates: A list of strings, where each string represents represents the path to a .html file you want executed.
+// - Content: A struct containing the data you want executed in your template.
 // - Name: A string that indicates the name of the template you want executed. Use "" for no template execution
 type StaticF struct {
 	Templates []string
@@ -23,9 +23,9 @@ type DynamicF struct {
 type DynamicFFunc func() DynamicF
 
 // The GoX Router will render and serve the full page
-// - Value: A struct containing the data you want executed in your template.
-// - StrArr: A list of strings, where each string represents represents the path to a .html file you want executed.
-// - Str: A string that indicates the template you want executed. Use "" for no template execution
+// - Template: Template object used for your page
+// - Content: A struct containing the data you want executed in your template.
+// - Name: A string that indicates the name of the template you want executed. Use "" for no template execution
 type StaticT struct {
 	Template *template.Template
 	Content  interface{}
@@ -34,10 +34,12 @@ type StaticT struct {
 type StaticTFunc func() StaticT
 
 // The GoX Router will render both the body or full page and serve based on state
-// - Template: A Template object you used
+// - Templates: Additional templates you want parsed with your page
 // - Content: A struct containing the data you want executed in your template.
+// - Template: Template object used for your page
 type DynamicT struct {
-	Template *template.Template
-	Content  interface{}
+	Templates []string
+	Content   interface{}
+	Template  *template.Template
 }
 type DynamicTFunc func() DynamicT

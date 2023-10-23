@@ -19,3 +19,5 @@ import '@material/web/elevation/elevation.js';
 import '@material/web/list/list-item.js';
 import '@material/web/list/list.js';
 import '@material/web/ripple/ripple.js';
+import '@material/web/tabs/primary-tab.js';
+import '@material/web/tabs/tabs.js';

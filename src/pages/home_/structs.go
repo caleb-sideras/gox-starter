@@ -13,6 +13,7 @@ type HomeSection struct {
 	Description string
 	Section     int
 	Cards       []HomeCard
+	Id          string
 }
 
 type HomeContent struct {

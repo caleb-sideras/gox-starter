@@ -6,13 +6,15 @@ import (
 )
 
 type PageData struct {
-	Data                data.Page
-	AdditionalTemplates []string
+	Data  data.Page
+	Index string
+	Page  string
 }
 
 type DataRender struct {
-	Data                data.PageFunc
-	AdditionalTemplates []string
+	Data  data.PageFunc
+	Index string
+	Page  string
 }
 
 type HandlerDefaultFunc func(http.ResponseWriter, *http.Request)

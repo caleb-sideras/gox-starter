@@ -31,16 +31,28 @@ func RenderTemplate[T any](filePath string, outputDir string, tmpl *template.Tem
 	return err
 }
 
-func RenderFileTemplate[T any](filePath string, outputDir string, templates string, tmpl *template.Template, v T, templateExec string) error {
-	// if templateExec == "" {
-	parentTmpl := template.Must(template.ParseFiles(templates))
-	tmpl.Tree.Root = parentTmpl.Tree.Copy().Root
-	// } else {
-	// template.Must(tmpl.ParseFiles(templates))
-	// log.Println(tmpl.Tree)
-	// }
-	// log.Println(tmpl.Tree)
-	return RenderTemplate(filePath, outputDir, tmpl, v, templateExec)
+func RenderFileTemplateIndex[T any](filePath string, outputDir string, index string, tmpls []string, tmpl *template.Template, v T) error {
+	parentTmpl := template.Must(template.ParseFiles(index))
+
+	_, err := parentTmpl.ParseFiles(tmpls...)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = parentTmpl.New("page").Parse(tmpl.Tree.Root.String())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return RenderTemplate(filePath, outputDir, parentTmpl, v, "")
+}
+
+func RenderFileTemplatePage[T any](filePath string, outputDir string, tmpls []string, tmpl *template.Template, v T) error {
+	_, err := tmpl.ParseFiles(tmpls...)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return RenderTemplate(filePath, outputDir, tmpl, v, "")
 }
 
 func CreateFile(filePath string, outputDir string) (*os.File, error) {

@@ -22,8 +22,8 @@
   id="task-list">
   {{ range .Tasks}}
   {{ block "task-list-element" .}}
-  <li class="w-full justify-between align-middle flex">
-    <span class='list-group-item my-auto px-4'>{{.Text}}</span>
+  <li class="w-full justify-between align-center flex p-4">
+    <span class='list-group-item my-auto'>{{.Text}}</span>
     <md-checkbox></md-checkbox>
   </li>
   <md-divider inset></md-divider>

@@ -1,28 +1,44 @@
-{{define "page"}}
+<link href="/static/css/prism.css" rel="stylesheet" />
 
-<link rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-<link rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 m-2">
+<div class="flex flex-col gap-4 m-2">
 
   <div class="col-span-1 bg-surface-1 text-neutral-10 p-8 sm:p-16 rounded-xl">
-    <h1 class="text-6xl sm:text-8xl font-medium mb-2">Example</h1>
-    <div class="text-lg sm:text-xl">The following TODO component shows how HTMX and Alpine JS can be used for Server and
-      Client
-      side interactivity respectively.</div>
+    <h1 class="text-6xl sm:text-8xl font-bold mb-2">TODO</h1>
+    <div class="text-lg sm:text-xl">The following TODO component shows how to use both <span class="font-bold">func
+        Render</span> and <span class="font-bold">Func Handle</span> for sub-routes</div>
   </div>
 
   <div class="col-span-1">
-    <div class="flex justify-center rounded-lg overflow-hidden bg-no-repeat bg-cover p-4 mb-4 "
+    <md-tabs activeTabIndex="0">
+      <md-primary-tab inline-icon hx-get="/example/todossr" hx-target="#todo" hx-swap="innerHTML">
+        <md-icon slot="icon">
+          <span class="material-symbols-outlined"
+            style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;">
+            info
+          </span>
+        </md-icon>
+        Example
+      </md-primary-tab>
+
+      <md-primary-tab inline-icon hx-get="/example/todocode" hx-target="#todo" hx-swap="innerHTML">
+        <md-icon slot="icon">
+          <span class="material-symbols-outlined"
+            style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;">
+            Code
+          </span>
+        </md-icon>
+        Code
+      </md-primary-tab>
+    </md-tabs>
+
+    <div class="flex justify-center rounded-b-3xl overflow-hidden bg-no-repeat bg-cover p-4 mb-4 "
       style="background-image: url(&quot;https://lh3.googleusercontent.com/pWbl6FPTMdm0gncq3dhWuCzk8y0RIb52ilgtyW8FesqxTC5Ey92D_79pulpl-q5uf_VKJV-eT07mshP9vZLH6jH9FBaQH5DH4F4TwIfDlps3g587KNg=w1200-rj&quot;);">
       <div id="todo"
-        class="max-w-lg h-96 flex flex-col gap-4 bg-blue mx-auto bg-surface-1 text-color-neutral-10 p-4 rounded-xl">
+        class="min-h-[384px] overflow-hidden flex flex-col gap-4 bg-blue mx-auto bg-surface-1 text-color-neutral-10 p-4 rounded-xl">
         {{ template "todo" . }}
       </div>
     </div>
-
+    <!--
     <md-navigation-bar active-index="0">
       <md-navigation-tab id="server" label="Server" active hx-get="/example/todossr" hx-target="#todo"
         hx-swap="innerHTML">
@@ -39,6 +55,6 @@
           style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;">person</span>
       </md-navigation-tab>
     </md-navigation-bar>
+    -->
   </div>
 </div>
-{{end}}

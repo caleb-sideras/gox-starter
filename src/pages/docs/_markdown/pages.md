@@ -4,7 +4,7 @@ Pages are a simple way to define and handle route specific UI
 
 ## page.html
 
-Every route can have a distinct UI defined within a `page.html` file. To ensure the route's content is recognized and can be populated into your `index.html`, encapsulate your UI within a *page* block.
+Every route can have a distinct UI defined within a `page.html` file.
 
 ### Example
 
@@ -30,11 +30,7 @@ app               (1)
 
 - page.html (2)
 ```html
-{{`{{ define 'page' }}`}}
-
 <h1>Hello World!</h1>
-
-{{`{{ end }}`}}
 ```
 
 \

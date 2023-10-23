@@ -6,18 +6,22 @@ var VarHomeCards []HomeCard = []HomeCard{
 	{
 		Title:       "What is GoX?",
 		Description: template.HTML("Understand what GoX solves"),
+		Link:        "#what-is-gox",
 	},
 	{
 		Title:       "Using GoX",
 		Description: template.HTML("Learn how to use GoX"),
+		Link:        "#using-gox",
 	},
 	{
 		Title:       "Additions",
 		Description: template.HTML("Additional technologies to use with GoX"),
+		Link:        "#additions",
 	},
 	{
 		Title:       "Contribute",
 		Description: template.HTML("Find out how you can contribute to GoX"),
+		Link:        "#contribute",
 	},
 }
 
@@ -25,24 +29,28 @@ var VarHomeSections []HomeSection = []HomeSection{
 	{
 		Title:       "What's GoX?",
 		Description: "While Go and HTMX are a joy to work with, there is no established way of using these technologies together in a way that scales; resulting in complexity in your codecase. GoX structures your code and hides this complexity behind certain primitives.",
+		Id:          "what-is-gox",
 		Section:     1,
 		Cards:       cards1,
 	},
 	{
 		Title:       "Using GoX",
 		Description: "Reading documentation can be difficult, so we have created some examples to illutrate common usecases.",
+		Id:          "using-gox",
 		Section:     2,
 		Cards:       cards2,
 	},
 	{
 		Title:       "Additions",
 		Description: "Go and HTMX alone are not enough to create a rich user experience. Below are some recommended technologies to add to your toolbox.",
+		Id:          "additions",
 		Section:     3,
 		Cards:       cards3,
 	},
 	{
 		Title:       "Contribute",
 		Description: "GoX is an open-source project. PRs, Issues, Proposals will all be looked at",
+		Id:          "contribute",
 		Section:     3,
 		Cards:       cards4,
 	},
@@ -51,50 +59,40 @@ var VarHomeSections []HomeSection = []HomeSection{
 var cards1 []HomeCard = []HomeCard{
 	{
 		Title:       "Pages",
-		Description: template.HTML("Pages are a simple way to handle routing to either dynamic or static pages"),
-		Link:        "/docs#pages",
+		Description: template.HTML("Pages are a simple way to define and handle route specific UI"),
+		Link:        "/docs/pages",
 	},
 	{
 		Title:       "Data",
-		Description: template.HTML("Separate data from your HTML powering re-usuable components with dynamic data fetching"),
-		Link:        "/docs#data-handling",
+		Description: template.HTML("Separate data from your HTML powering reusuable components with dynamic data fetching"),
+		Link:        "/docs/data",
 	},
 	{
 		Title:       "Render",
-		Description: template.HTML("Render your page and html partials at build time"),
-		Link:        "/docs#custom-rendering",
+		Description: template.HTML("Bespoke rendering processes for routes at build time"),
+		Link:        "/docs/render",
 	},
 	{
 		Title:       "Handle",
-		Description: template.HTML("Handlers used for html partials or full page reloads"),
-		Link:        "/docs#custom-handling",
+		Description: template.HTML("Custom handlers for html partials or full pages"),
+		Link:        "/docs/handle",
 	},
 }
 var cards3 []HomeCard = []HomeCard{
-	// {
-	// 	Title:       "Go http/template",
-	// 	Description: template.HTML("html/template implements data-driven templates for generating HTML output safe against code injection."),
-	// 	Link:        "/",
-	// },
-	// {
-	// 	Title:       "HTMX",
-	// 	Description: template.HTML("HTMX is a library that allows you to access modern browser features directly from HTML, rather than using javascript."),
-	// 	Link:        "/",
-	// },
 	{
 		Title:       "Alpine",
 		Description: template.HTML("Alpine is a rugged, minimal tool for composing behavior directly in your markup."),
-		Link:        "/",
+		Link:        "https://alpinejs.dev/",
 	},
 	{
 		Title:       "Material 3",
 		Description: template.HTML("Material 3 is the latest version of Google’s open-source design system."),
-		Link:        "/",
+		Link:        "https://m3.material.io/",
 	},
 	{
 		Title:       "Tailwind",
 		Description: template.HTML("A utility-first CSS framework directly in your markup."),
-		Link:        "/",
+		Link:        "https://tailwindcss.com/",
 	},
 }
 
@@ -113,12 +111,12 @@ var cards2 []HomeCard = []HomeCard{
 
 var cards4 []HomeCard = []HomeCard{
 	{
-		Title:       "GoX-Starter",
+		Title:       "gox-starter",
 		Description: template.HTML("The GoX starter-kit is open-source."),
 		Link:        "/",
 	},
 	{
-		Title:       "GoX-Website",
+		Title:       "gox-website",
 		Description: template.HTML("The code for this current website is public."),
 		Link:        "/",
 	},
