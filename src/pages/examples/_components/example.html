@@ -1,0 +1,47 @@
+{{define "route"}}
+<div hx-get="{{.ExampleUrl}}" hx-trigger="load" hx-target="#example-body" hx-swap="innerHTML" hx-indicator="#spinner">
+</div>
+
+<div class="flex flex-col gap-4">
+
+  <div class="col-span-1 bg-surface-1 text-neutral-10 p-8 sm:p-16 rounded-3xl">
+    <h1 class="text-6xl sm:text-8xl font-bold mb-2">{{.Title}}</h1>
+    <div class="text-lg sm:text-xl">{{.Description}}</div>
+  </div>
+
+  <div class="col-span-1">
+    <md-tabs activeTabIndex="0">
+      <md-primary-tab inline-icon hx-get="{{.ExampleUrl}}" hx-target="#example-body" hx-swap="innerHTML">
+        <md-icon slot="icon">
+          <span class="material-symbols-outlined"
+            style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;">
+            info
+          </span>
+        </md-icon>
+        Example
+      </md-primary-tab>
+
+      <md-primary-tab inline-icon hx-get="{{.CodeUrl}}" hx-target="#example-body" hx-swap="innerHTML">
+        <md-icon slot="icon">
+          <span class="material-symbols-outlined"
+            style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;">
+            Code
+          </span>
+        </md-icon>
+        Code
+      </md-primary-tab>
+    </md-tabs>
+
+    <div
+      class="flex justify-center rounded-b-3xl overflow-hidden bg-no-repeat bg-cover sm:p-4 sm:mb-4 sm:bg-[url('https://lh3.googleusercontent.com/pWbl6FPTMdm0gncq3dhWuCzk8y0RIb52ilgtyW8FesqxTC5Ey92D_79pulpl-q5uf_VKJV-eT07mshP9vZLH6jH9FBaQH5DH4F4TwIfDlps3g587KNg=w1200-rj')] ">
+      <div id="example-body"
+        class="fade-in min-h-[384px] overflow-hidden flex flex-col gap-4 bg-blue mx-auto w-full sm:w-auto bg-surface-1 text-color-neutral-10 p-4 rounded-b-xl sm:rounded-xl">
+        <md-circular-progress slot="trailing-icon" indeterminate class="htmx-indicator m-auto" id="spinner"
+          role="status" aria-hidden="true">
+        </md-circular-progress>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{end}}

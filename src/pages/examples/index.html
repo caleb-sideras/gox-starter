@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Documentation - GoX Framework</title>
+  <title>Examples - GoX Framework</title>
   <script src="https://unpkg.com/htmx.org@1.9.6"
     integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni"
     crossorigin="anonymous"></script>
@@ -15,6 +15,7 @@
   <link href="/static/css/output.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.20.0/themes/prism.min.css" rel="stylesheet" />
+  <link href="/static/css/prism.css" rel="stylesheet" />
   <link href="/static/css/prism.css" rel="stylesheet" />
   <meta name="htmx-config" content='{"globalViewTransitions":"true"}'>
 </head>
@@ -30,7 +31,7 @@
     init() {
       $refs.docsdrawer.opened=true;
     },
-    activeTabRef: $refs.{{.ActiveDocsId}}, 
+    activeTabRef: $refs.{{.ActiveExampleId}}, 
     handleTabClick(event) {
       if(event.target.id !== this.activeTabRef.id) {
         this.activeTabRef.style.background = 'transparent';
@@ -41,58 +42,32 @@
   }" class="hidden lg:flex h-screen fixed">
       <md-navigation-drawer-modal x-ref="docsdrawer" pivot="start" active-index="0">
         <md-list listTabIndex="0" class="h-full bg-surface-2 z-10 px-2 border-l border-surface-variant" hx-boost="true">
-          <a href="/docs">
-            <md-list-item x-ref="intro" id="intro" interactive type="link" @click="handleTabClick($event);" {{if eq
-              .ActiveDocsId "intro" }} class="rounded-full bg-secondary-container" {{else}} class="rounded-full"
+          <a href="/examples/todo">
+            <md-list-item x-ref="todo" id="todo" interactive type="link" @click="handleTabClick($event);" {{if eq
+              .ActiveExampleId "todo" }} class="rounded-full bg-secondary-container" {{else}} class="rounded-full"
               {{end}}>
-              Introduction
+              Todo
             </md-list-item>
           </a>
-          <a href="/docs/routing">
-            <md-list-item x-ref="routing" id="routing" interactive type="link" @click="handleTabClick($event);" {{if eq
-              .ActiveDocsId "routing" }} class="rounded-full bg-secondary-container" {{else}} class="rounded-full"
-              {{end}}>
-              Routing
-            </md-list-item>
-          </a>
-          <a href="/docs/pages">
-            <md-list-item x-ref="page" id="page" interactive type="link" @click="handleTabClick($event);" {{if eq
-              .ActiveDocsId "page" }} class="rounded-full bg-secondary-container" {{else}} class="rounded-full" {{end}}>
-              Pages
-            </md-list-item>
-          </a>
-          <a href="/docs/index">
-            <md-list-item x-ref="indexs" id="indexs" interactive type="link" @click="handleTabClick($event);" {{if eq
-              .ActiveDocsId "indexs" }} class="rounded-full bg-secondary-container" {{else}} class="rounded-full"
-              {{end}}>
-              Index
-            </md-list-item>
-          </a>
-          <a href="/docs/data">
+          <a href="/examples/data">
             <md-list-item x-ref="data" id="data" interactive type="link" @click="handleTabClick($event);" {{if eq
-              .ActiveDocsId "data" }} class="rounded-full bg-secondary-container" {{else}} class="rounded-full" {{end}}>
+              .ActiveExampleId "data" }} class="rounded-full bg-secondary-container" {{else}} class="rounded-full"
+              {{end}}>
               Data
             </md-list-item>
           </a>
-          <a href="/docs/render">
+          <a href="/examples/render">
             <md-list-item x-ref="render" id="render" interactive type="link" @click="handleTabClick($event);" {{if eq
-              .ActiveDocsId "render" }} class="rounded-full bg-secondary-container" {{else}} class="rounded-full"
+              .ActiveExampleId "render" }} class="rounded-full bg-secondary-container" {{else}} class="rounded-full"
               {{end}}>
               Render
             </md-list-item>
           </a>
-          <a href="/docs/handle">
-            <md-list-item x-ref="handling" id="handling" interactive type="link" @click="handleTabClick($event);" {{if
-              eq .ActiveDocsId "handling" }} class="rounded-full bg-secondary-container" {{else}} class="rounded-full"
+          <a href="/examples/pages">
+            <md-list-item x-ref="pages" id="pages" interactive type="link" @click="handleTabClick($event);" {{if eq
+              .ActiveExampleId "pages" }} class="rounded-full bg-secondary-container" {{else}} class="rounded-full"
               {{end}}>
-              Handling
-            </md-list-item>
-          </a>
-          <a href="/docs/router">
-            <md-list-item x-ref="router" id="router" interactive type="link" @click="handleTabClick($event);" {{if eq
-              .ActiveDocsId "router" }} class="rounded-full bg-secondary-container" {{else}} class="rounded-full"
-              {{end}}>
-              Gox Router
+              Pages
             </md-list-item>
           </a>
         </md-list>
@@ -101,8 +76,7 @@
 
     <div class="flex flex-col lg:ml-drawer-width w-100">
 
-      <script src="/static/js/prism.js"></script>
-      <main id="markdown" class="gap-2 md:px-8 px-4 pb-4 slide-up">
+      <main class="gap-2 p-2 pb-4">
         {{ block "page" . }}{{end}}
       </main>
 

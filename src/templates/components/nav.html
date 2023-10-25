@@ -30,8 +30,8 @@
         </md-navigation-tab>
       </a>
 
-      <a href="/example">
-        <md-navigation-tab {{if eq .ActiveTabId "example" }}active{{end}} id="example" label="Example" x-ref="example"
+      <a href="/examples/todo">
+        <md-navigation-tab {{if eq .ActiveTabId "example" }}active{{end}} id="example" label="Examples" x-ref="example"
           @click="handleTabClick($event);">
           <span slot="active-icon" class="material-symbols-outlined pointer-events-none"
             style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">code</span>

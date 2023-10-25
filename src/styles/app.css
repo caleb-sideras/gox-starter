@@ -106,8 +106,10 @@
 
   --md-circular-progress-size: 32px;
   --md-circular-progress-active-indicator-width: 20;
-
+  /**
   --md-navigation-bar-container-color: var(--md-sys-color-surface-2);
+  **/
+  --md-navigation-bar-container-color: var(--md-sys-color-surface-1);
   --md-navigation-bar-container-elevation: 0;
   --md-navigation-bar-container-shape: 9999px;
   --md-navigation-bar-active-indicator-shape: var(--md-navigation-bar-active-indicator-shape);
@@ -135,6 +137,8 @@
   --md-navigation-drawer-modal-scrim-color: black;
 */
   --md-navigation-drawer-modal-scrim-opacity: 0.32;
+
+  --md-primary-tab-container-color: var(--md-sys-color-surface-0);
 }
 
 
@@ -267,4 +271,30 @@ hr {
 ::view-transition-new(slide-up) {
   animation: 210ms cubic-bezier(0, 0, 0.2, 1) 45ms both fade-in,
     300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-bottom;
+}
+
+.slide-in {
+  view-transition-name: slide-in;
+}
+
+::view-transition-old(slide-in) {
+  animation: 180ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
+    600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
+}
+
+::view-transition-new(slide-it) {
+  animation: 420ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
+    600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
+}
+
+.fade-in {
+  view-transition-name: fade-in;
+}
+
+::view-transition-old(fade-in) {
+  animation: 180ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
+}
+
+::view-transition-new(fade-it) {
+  animation: 420ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
 }

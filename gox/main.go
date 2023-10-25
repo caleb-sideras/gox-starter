@@ -366,8 +366,10 @@ func (g *Gox) getETags() map[string]string {
 func (g *Gox) handleRoutes(r *mux.Router, eTags map[string]string) {
 	log.Println("---------------------PAGES HANDLERS-----------------------")
 	for route := range PagesList {
-		log.Println(route)
-		r.HandleFunc(route+"{slash:/?}",
+		// loop variable capture
+		currRoute := route
+		log.Println(currRoute)
+		r.HandleFunc(currRoute+"{slash:/?}",
 			func(w http.ResponseWriter, r *http.Request) {
 				log.Println("- - - - - - - - - - - -")
 
@@ -380,16 +382,21 @@ func (g *Gox) handleRoutes(r *mux.Router, eTags map[string]string) {
 					log.Println("Partial")
 					*eTagPath = filepath.Join(r.URL.Path, PAGE_BODY_FILE)
 					*pagePath = filepath.Join(g.OutputDir, *eTagPath)
+				}
+
+				handleBPage := func() {
+					handlePage()
 					w.Header().Set("HX-Retarget", "main")
 					w.Header().Set("HX-Reswap", "innerHTML transition:true")
 				}
+
 				handleIndex := func() {
 					log.Println("Full-Page")
 					*eTagPath = filepath.Join(r.URL.Path, PAGE_FILE)
 					*pagePath = filepath.Join(g.OutputDir, *eTagPath)
 				}
 
-				formatRequest(w, r, handlePage, handleIndex)
+				formatRequest(w, r, handlePage, handleBPage, handleIndex, handleIndex)
 
 				log.Println("Path:", *pagePath)
 				log.Println("ETag:", eTags[*eTagPath])
@@ -421,11 +428,13 @@ func (g *Gox) handleRoutes(r *mux.Router, eTags map[string]string) {
 			panic(err)
 		}
 		dataTmpls[route] = tmpl
+
 		// loop variable capture
 		currRoute := route
+		currData := data
 
 		log.Println(currRoute)
-		r.HandleFunc(route+"{slash:/?}",
+		r.HandleFunc(currRoute+"{slash:/?}",
 
 			func(w http.ResponseWriter, r *http.Request) {
 
@@ -433,39 +442,41 @@ func (g *Gox) handleRoutes(r *mux.Router, eTags map[string]string) {
 				log.Println("Fetching Data...")
 
 				tmpl := template.Must(dataTmpls[currRoute].Clone())
-				funcReturn := data.Data(w, r)
+				funcReturn := currData.Data(w, r)
 
 				// cannot get ETag from data because we are sending full and partials
 				if funcReturn.Error != nil {
+					log.Println("Error Fetching Data", funcReturn.Error)
 					http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				}
 
 				if len(funcReturn.Templates) > 0 {
 					_, err = tmpl.ParseFiles(funcReturn.Templates...)
+					log.Println(funcReturn.Templates)
 					if err != nil {
-						panic(err)
+						log.Println("Error Parsing Files", len(funcReturn.Templates), funcReturn.Templates)
+						http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 					}
-				}
-
-				_, err = tmpl.ParseFiles(funcReturn.Templates...)
-
-				if err != nil {
-					log.Println("Error Parsing Files")
-					http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				}
 
 				buffer := &bytes.Buffer{}
 
 				handlePage := func() {
+					log.Println("Partial")
 					tmpl.ExecuteTemplate(buffer, "page", funcReturn.Content)
+				}
+
+				handleBPage := func() {
+					handlePage()
 					w.Header().Set("HX-Retarget", "main")
 					w.Header().Set("HX-Reswap", "innerHTML")
 				}
 				handleIndex := func() {
+					log.Println("Full-Page")
 					tmpl.Execute(buffer, funcReturn.Content)
 				}
 
-				formatRequest(w, r, handlePage, handleIndex)
+				formatRequest(w, r, handlePage, handleBPage, handleIndex, handleIndex)
 
 				currETag := utils.GenerateETag(buffer.String())
 				log.Println("ETag:", currETag)
@@ -486,11 +497,13 @@ func (g *Gox) handleRoutes(r *mux.Router, eTags map[string]string) {
 
 	log.Println("---------------------RENDER HANDLERS-----------------------")
 	for _, route := range RenderList {
-		log.Println(route.Path + DIR)
+		// loop variable capture
+		currRoute := route
+		log.Println(currRoute.Path + DIR)
 
-		switch route.Handler.(type) {
+		switch currRoute.Handler.(type) {
 		case func() render.StaticF, func() render.StaticT:
-			r.HandleFunc(route.Path+"{slash:/?}",
+			r.HandleFunc(currRoute.Path+"{slash:/?}",
 				func(w http.ResponseWriter, r *http.Request) {
 
 					eTagPath := filepath.Join(r.URL.Path, PAGE_FILE)
@@ -506,7 +519,7 @@ func (g *Gox) handleRoutes(r *mux.Router, eTags map[string]string) {
 				},
 			)
 		case func() render.DynamicF, func() render.DynamicT:
-			r.HandleFunc(route.Path+"{slash:/?}",
+			r.HandleFunc(currRoute.Path+"{slash:/?}",
 				func(w http.ResponseWriter, r *http.Request) {
 					log.Println("- - - - - - - - - - - -")
 
@@ -519,16 +532,19 @@ func (g *Gox) handleRoutes(r *mux.Router, eTags map[string]string) {
 						log.Println("Partial")
 						*eTagPath = filepath.Join(r.URL.Path, PAGE_BODY_FILE)
 						*pagePath = filepath.Join(g.OutputDir, *eTagPath)
+					}
+					handleBPage := func() {
+						handlePage()
 						w.Header().Set("HX-Retarget", "main")
 						w.Header().Set("HX-Reswap", "innerHTML")
 					}
 					handleIndex := func() {
-						log.Println("Whole")
+						log.Println("Full-Page")
 						*eTagPath = filepath.Join(r.URL.Path, PAGE_FILE)
 						*pagePath = filepath.Join(g.OutputDir, *eTagPath)
 					}
 
-					formatRequest(w, r, handlePage, handleIndex)
+					formatRequest(w, r, handlePage, handleBPage, handleIndex, handleIndex)
 
 					log.Println("Path:", *pagePath)
 					log.Println("ETag:", eTags[*eTagPath])
@@ -552,20 +568,26 @@ func (g *Gox) handleRoutes(r *mux.Router, eTags map[string]string) {
 	}
 	log.Println("----------------------CUSTOM HANDLERS----------------------")
 	for _, route := range HandleList {
-		log.Println(route.Path + DIR)
-		r.HandleFunc(route.Path+"{slash:/?}", route.Handler)
+		// loop variable capture
+		currRoute := route
+		log.Println(currRoute.Path + DIR)
+		r.HandleFunc(currRoute.Path+"{slash:/?}", currRoute.Handler)
 	}
 }
 
-func formatRequest(w http.ResponseWriter, r *http.Request, ifPage func(), ifIndex func()) {
+func formatRequest(w http.ResponseWriter, r *http.Request, ifPage func(), ifBPage func(), ifIndex func(), ifBIndex func()) {
 	requestType := determineRequest(w, r)
 	switch requestType {
 	case ErrorRequest:
 		// handle Error
-	case HxGet_Page, HxBoost_Page:
+	case HxGet_Page:
 		ifPage()
-	case HxGet_Index, HxBoost_Index, NormalRequest:
+	case HxBoost_Page:
+		ifBPage()
+	case HxGet_Index:
 		ifIndex()
+	case HxBoost_Index, NormalRequest:
+		ifBIndex()
 	}
 }
 
