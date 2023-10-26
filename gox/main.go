@@ -12,7 +12,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -109,7 +108,6 @@ func (g *Gox) Build(startDir string, packageDir string) {
 
 	log.Println("---------------------WALKING DIRECTORY---------------------")
 	dirFiles, err := walkDirectoryStructure(startDir)
-	log.Println(dirFiles)
 	if err != nil {
 		log.Fatalf("error walking the path %v: %v", startDir, err)
 	}
@@ -608,7 +606,7 @@ func determineRequest(w http.ResponseWriter, r *http.Request) RequestType {
 		return HxGet_Page
 	}
 
-	htmxUrl, err := lastElementOfURL(utils.GetHtmxRequestURL(r))
+	htmxUrl, err := utils.LastElementOfURL(utils.GetHtmxRequestURL(r))
 	if err != nil {
 		return ErrorRequest
 	}
@@ -625,19 +623,6 @@ func determineRequest(w http.ResponseWriter, r *http.Request) RequestType {
 
 	// serve page+index if not matching index group
 	return HxBoost_Index
-}
-
-func lastElementOfURL(rawURL string) (string, error) {
-	u, err := url.Parse(rawURL)
-	if err != nil {
-		return "", err
-	}
-
-	if u.Path == "" || u.Path == "/" {
-		return "/", nil
-	}
-
-	return u.Path, nil
 }
 
 // RenderStaticFiles() renders all static files defined by the user

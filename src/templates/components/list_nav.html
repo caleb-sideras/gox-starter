@@ -1,0 +1,33 @@
+{{ $empty:= "" }}
+
+<div x-data="{ 
+    activeTabRef: {{if eq .Active $empty }} $refs.empty {{else}} $refs.{{.Active}} {{end}}, 
+    handleTabClick(event) {
+      if (this.activeTabRef != ''){
+        this.activeTabRef.style.background = 'transparent';
+      }
+      event.target.style.background = 'var(--md-sys-color-secondary-container)';
+      this.activeTabRef = event.target;
+    }
+  }">
+  <md-list-item hx-get="/nav/home" hx-target="#md-list" hx-swap="innerHTML" interactive type="link"
+    class="rounded-full">
+    <md-icon slot="start" data-variant="icon">
+      <span class="material-symbols-outlined"
+        style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;">
+        arrow_left_alt
+      </span>
+    </md-icon>
+    Main menu
+  </md-list-item>
+  {{ range .ListItems}}
+  <a href="{{.PageUrl}}">
+    <md-list-item x-ref="{{.Id}}" id="{{.Id}}" interactive type="link"
+      @click="handleTabClick($event); closeDrawer($event);" {{if eq $.Active .Id }}
+      class="rounded-full bg-secondary-container" {{else}} class="rounded-full" {{end}}>
+      {{.Name}}
+    </md-list-item>
+  </a>
+  {{end}}
+  <div x-ref="empty"></div>
+</div>

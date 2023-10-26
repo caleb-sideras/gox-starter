@@ -13,7 +13,7 @@ func Render() render.DynamicT {
 
 	markdownDocsContent := docs.DocsData{
 		ActiveTabId:  "docs",
-		ActiveDocsId: "indexs",
+		ActiveDocsId: "index",
 	}
 
 	tmpl := template.Must(global.MarkdownToHTML("pages/docs/_markdown/index.md"))

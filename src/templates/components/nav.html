@@ -53,15 +53,37 @@
   </div>
 
   <!-- Mobile View -->
-  <div class="lg:hidden w-[320px]">
-    <md-icon x-on:click="$refs.drawer.opened = true"
+  <div x-data="{ 
+    init() {
+      $refs.drawer.addEventListener('navigation-drawer-changed', (event) => {
+        var mainElement = document.querySelector('main');
+        if (event.target.opened){
+          document.body.style.overflow = 'hidden';
+          mainElement.style.zIndex = '-1';
+        }else{
+          document.body.style.overflow = 'auto';
+          mainElement.style.zIndex = '0';
+        }
+      });
+    },
+    activeTabRef: $refs.{{.ActiveTabId}}, 
+    mainElement: document.querySelector('main'), 
+    closeDrawer(event) {
+      $refs.drawer.opened = false;   
+    }
+  }" class="lg:hidden w-[320px]">
+
+    <md-icon
+      x-on:click="$refs.drawer.opened = true; document.body.style.overflow = 'hidden'; mainElement.style.zIndex = '-1';"
       class="my-2 ml-3 h-12 w-12 flex items-center justify-center cursor-pointer">
       <span class="material-symbols-outlined"
         style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">
         menu
       </span>
     </md-icon>
+
     <md-navigation-drawer-modal x-ref="drawer" pivot="start" active-index="0">
+
       <md-icon x-on:click="$refs.drawer.opened = false"
         class="my-2 ml-3 h-12 w-12 flex items-center justify-center cursor-pointer">
         <span class="material-symbols-outlined"
@@ -70,9 +92,12 @@
         </span>
       </md-icon>
 
-      <md-list listTabIndex="0" class="h-full bg-surface-2 z-10 mt-2 px-4 z-50" hx-boost="true">
+      <md-list id="md-list" class="h-full bg-surface-2 z-10 mt-2 px-4 z-50" hx-boost="true">
+
+        {{ block "nav-main" .}}
         <a href="/">
-          <md-list-item {{if eq .ActiveTabId "example" }}active{{end}} id="home" @click="handleTabClick">
+          <md-list-item id="home" x-ref="home" @click="closeDrawer" {{if eq .ActiveTabId "home" }}
+            class="rounded-full bg-secondary-container" {{else}} class="rounded-full" {{end}}>
             Home
             <md-icon slot="start" data-variant="icon">
               <span class="material-symbols-outlined"
@@ -82,36 +107,42 @@
             </md-icon>
           </md-list-item>
         </a>
-        <a href="/example">
-          <md-list-item {{if eq .ActiveTabId "example" }}active{{end}} id="examples" @click="handleTabClick">
-            Examples
-            <md-icon slot="start" data-variant="icon">
-              <span class="material-symbols-outlined"
-                style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">
-                more_horiz
-              </span>
-            </md-icon>
-          </md-list-item>
-        </a>
-        <a href="/docs">
-          <md-list-item {{if eq .ActiveTabId "docs" }}active{{end}}id="docs" @click="handleTabClick">
-            Docs
-            <md-icon slot="start" data-variant="icon">
-              <span class="material-symbols-outlined"
-                style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;">
-                book
-              </span>
-            </md-icon>
-            <!--
+
+        <md-list-item hx-get="/nav/examples" hx-target="#md-list" hx-swap="innerHTML" id="examples" x-ref="example" {{if
+          eq .ActiveTabId "example" }} class="rounded-full bg-secondary-container" {{else}} class="rounded-full"
+          {{end}}>
+          Examples
+          <md-icon slot="start" data-variant="icon">
+            <span class="material-symbols-outlined"
+              style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">
+              more_horiz
+            </span>
+          </md-icon>
           <md-icon slot="end">
             <span class="material-symbols-outlined"
               style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">
               arrow_right_alt
             </span>
           </md-icon>
-          -->
-          </md-list-item>
-        </a>
+        </md-list-item>
+
+        <md-list-item hx-get="/nav/docs" hx-target="#md-list" hx-swap="innerHTML" id="docs" x-ref="docs" {{if eq
+          .ActiveTabId "docs" }} class="rounded-full bg-secondary-container" {{else}} class="rounded-full" {{end}}>
+          Docs
+          <md-icon slot="start" data-variant="icon">
+            <span class="material-symbols-outlined"
+              style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;">
+              book
+            </span>
+          </md-icon>
+          <md-icon slot="end">
+            <span class="material-symbols-outlined"
+              style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">
+              arrow_right_alt
+            </span>
+          </md-icon>
+        </md-list-item>
+        {{end}}
       </md-list>
     </md-navigation-drawer-modal>
   </div>

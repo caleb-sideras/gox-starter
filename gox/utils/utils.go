@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -111,6 +112,18 @@ func IsHxBoosted(r *http.Request) bool {
 	}
 }
 
+func LastElementOfURL(rawURL string) (string, error) {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return "", err
+	}
+
+	if u.Path == "" || u.Path == "/" {
+		return "/", nil
+	}
+
+	return u.Path, nil
+}
 func GenerateETag(content string) string {
 	hash := md5.Sum([]byte(content))
 	return fmt.Sprintf(`"%x"`, hash)
