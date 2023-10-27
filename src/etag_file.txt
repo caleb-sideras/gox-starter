@@ -1,4 +1,0 @@
-/example/page.html:02fc9fa5e6a9226d693bedfdeb7a1a89
-/example/page-body.html:535bcdc41ffc789aba9eec00dfb9e006
-page.html:8019e4639e2e98c75ab517a5359e641a
-page-body.html:860120a8700732f48d36b53997725c69

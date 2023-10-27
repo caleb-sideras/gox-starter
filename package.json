@@ -1,27 +1,23 @@
 {
-  "name": "gox-website",
+  "name": "gox-starter",
   "version": "1.0.0",
-  "description": "Website for the GoX Framework",
+  "description": "Starter repo for the GoX framework",
   "main": "index.js",
   "scripts": {
     "rollup": "rollup -c",
-    "tailwind-dev": "npx tailwindcss -i ./src/styles/app.css -o ./static/css/output.css --watch",
     "tailwind-build": "npx tailwindcss -i ./src/styles/app.css -o ./static/css/output.css",
     "go-build": "go run src/main.go build",
     "go-start": "go run src/main.go run",
-    "dev": "npm run rollup && npm run tailwind-dev",
     "build": "npm run rollup && npm run tailwind-build && npm run go-build",
     "start": "npm run go-start"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "@material/web": "^1.0.0"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.1.0",
-    "rollup": "^3.26.3 ",
-    "tailwindcss": "^3.3.3"
+    "rollup": "^3.26.3 "
   }
 }

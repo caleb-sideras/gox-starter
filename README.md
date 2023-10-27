@@ -3,7 +3,7 @@
     <picture>
       <img src="/static/assets/gox-mascot-hor.png" height="128">
     </picture>
-    <h1 align="center">GoX Website</h1>
+    <h1 align="center">GoX Starter</h1>
   </a>
 </p>
 
@@ -46,13 +46,13 @@ Before you begin, ensure you have the following installed on your machine:
 1. Clone the repository to your local machine.
 
    ```bash
-   git clone https://github.com/caleb-sideras/gox-website.git
+   git clone https://github.com/caleb-sideras/gox-starter.git
    ```
 
 2. Navigate to the project's directory.
 
    ```bash
-   cd gox-website
+   cd gox-starter
    ```
 
 3. Install the project dependencies.
@@ -65,17 +65,16 @@ Before you begin, ensure you have the following installed on your machine:
 
 To run the application for development, use the following commands:
 
-1. Building and running Javascript
+1. Building
 
    ```bash
    npm run build
    ```
 
-2. Building and running Go
+2. Running
 
    ```bash
-   go run main.go build
-   go run main.go run
+   npm run starter
    ```
 
 ## License
