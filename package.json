@@ -5,8 +5,13 @@
   "main": "index.js",
   "scripts": {
     "rollup": "rollup -c",
-    "tailwind": "npx tailwindcss -i ./src/styles/app.css -o ./static/css/output.css --watch",
-    "build": "npm run rollup && npm run tailwind"
+    "tailwind-dev": "npx tailwindcss -i ./src/styles/app.css -o ./static/css/output.css --watch",
+    "tailwind-build": "npx tailwindcss -i ./src/styles/app.css -o ./static/css/output.css",
+    "go-build": "go run src/main.go build",
+    "go-start": "go run src/main.go run",
+    "dev": "npm run rollup && npm run tailwind-dev",
+    "build": "npm run rollup && npm run tailwind-build && npm run go-build",
+    "start": "npm run go-start"
   },
   "keywords": [],
   "author": "",
