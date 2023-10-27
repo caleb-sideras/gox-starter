@@ -14,6 +14,13 @@ func main() {
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
 		case "build":
+			// Create a new instance of gox
+			g := gox.NewGox(global.HTML_OUT_DIR)
+
+			// Build your GoX app -> finds your handlers, creates your routes & renders static html
+			g.Build(global.APP_DIR, global.PROJECT_PACKAGE_DIR)
+
+		case "run":
 			// gorilla/mux router instance
 			r := mux.NewRouter()
 
@@ -26,15 +33,8 @@ func main() {
 			// Create a new instance of gox
 			g := gox.NewGox(global.HTML_OUT_DIR)
 
-			// Build your GoX app -> finds your handlers, creates your routes & renders static html
-			g.Build(global.APP_DIR, global.PROJECT_PACKAGE_DIR)
-
 			// Run your GoX app -> binds handlers to routes
 			g.Run(r, ":8000", global.HTML_SERVE_PATH)
-
-		case "dev":
-			// Build your own development env
-			log.Println("Dev not implemented.")
 		default:
 			log.Println("Invalid argument. Use 'build' or 'run'.")
 		}

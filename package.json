@@ -1,7 +1,7 @@
 {
-  "name": "go-test",
+  "name": "gox-website",
   "version": "1.0.0",
-  "description": "Creating a Base template for go projects",
+  "description": "Website for the GoX Framework",
   "main": "index.js",
   "scripts": {
     "rollup": "rollup -c",
