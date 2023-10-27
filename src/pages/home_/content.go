@@ -32,6 +32,8 @@ var VarHomeSections []HomeSection = []HomeSection{
 		Id:          "what-is-gox",
 		Section:     1,
 		Cards:       cards1,
+		ImageVer:    "/static/assets/gox-mascot-vert.png",
+		ImageHor:    "/static/assets/gox-mascot-hor.png",
 	},
 	{
 		Title:       "Using GoX",
@@ -39,6 +41,8 @@ var VarHomeSections []HomeSection = []HomeSection{
 		Id:          "using-gox",
 		Section:     2,
 		Cards:       cards2,
+		ImageVer:    "https://lh3.googleusercontent.com/RbMYWtKTLGv7tEAwsya6Z7NHcUYpn4gwkrp3zy9dVhN0jFppAE7VR12r1Hpgh1fZI3MhK3jUsG2xnCSrzpaLiJTxIHWO_CIARwfhe6naTzWo5VIdg8Y=w2400",
+		ImageHor:    "https://lh3.googleusercontent.com/7wuUlEFgaFEA075w4_OLDilE1vwTPGX7_G5_tiF9iARu8xXu1b-K27vD4cA3KLdhXdwABG1_I6YxvPjeUfzaYe1oVkuIJ0wTvh4ng6k7pEKAQVJzzw=w2400",
 	},
 	{
 		Title:       "Additions",
@@ -46,6 +50,8 @@ var VarHomeSections []HomeSection = []HomeSection{
 		Id:          "additions",
 		Section:     3,
 		Cards:       cards3,
+		ImageVer:    "https://lh3.googleusercontent.com/k5ZNz1pSrSN1NMrxHqxkO8Je_n5S9Q3TVYpZriGx9J2w_mCbya0INifAWw4KGRoaZTavD8e_rbaW3UqRUjk5UC5dKYXuh5M3qyLfrhwE6jIfVrCw9aeL=w2400",
+		ImageHor:    "https://lh3.googleusercontent.com/S7a0PvKXaPN1BjW3kffTstRaen4CVUD2nO1nfEk5z_GmjP5AD2fjfPdgfCig4cJMDpu11iGxdceqMJ9PrfU_PnP3bBtzwIN-IrXj4rTJGS6I7zx0=w2400",
 	},
 	{
 		Title:       "Contribute",
@@ -53,6 +59,8 @@ var VarHomeSections []HomeSection = []HomeSection{
 		Id:          "contribute",
 		Section:     3,
 		Cards:       cards4,
+		ImageVer:    "https://lh3.googleusercontent.com/k5ZNz1pSrSN1NMrxHqxkO8Je_n5S9Q3TVYpZriGx9J2w_mCbya0INifAWw4KGRoaZTavD8e_rbaW3UqRUjk5UC5dKYXuh5M3qyLfrhwE6jIfVrCw9aeL=w2400",
+		ImageHor:    "https://lh3.googleusercontent.com/S7a0PvKXaPN1BjW3kffTstRaen4CVUD2nO1nfEk5z_GmjP5AD2fjfPdgfCig4cJMDpu11iGxdceqMJ9PrfU_PnP3bBtzwIN-IrXj4rTJGS6I7zx0=w2400",
 	},
 }
 
@@ -98,14 +106,24 @@ var cards3 []HomeCard = []HomeCard{
 
 var cards2 []HomeCard = []HomeCard{
 	{
-		Title:       "SPA vs MPA",
-		Description: template.HTML("Navigating to a new page does not always require a full refresh/render. Using HTMX and separate client/server state, we can get the best of both worlds."),
-		Link:        "/",
+		Title:       "Todo",
+		Description: template.HTML("Shows you how to return static and dynamic HTML"),
+		Link:        "/examples/todo",
 	},
 	{
-		Title:       "SSR",
-		Description: template.HTML("Even if the page is static, GoX will dynamically render components on the server."),
-		Link:        "/",
+		Title:       "Data Fetching",
+		Description: template.HTML("Per-request data fetching for your pages"),
+		Link:        "/examples/data",
+	},
+	{
+		Title:       "Custom Rendering",
+		Description: template.HTML("Have a build step for your HTML"),
+		Link:        "/examples/render",
+	},
+	{
+		Title:       "Pages",
+		Description: template.HTML("Custom Rendering"),
+		Link:        "/examples/pages",
 	},
 }
 

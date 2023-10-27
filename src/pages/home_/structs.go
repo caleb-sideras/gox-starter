@@ -14,6 +14,8 @@ type HomeSection struct {
 	Section     int
 	Cards       []HomeCard
 	Id          string
+	ImageVer    string
+	ImageHor    string
 }
 
 type HomeContent struct {

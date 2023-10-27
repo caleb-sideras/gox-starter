@@ -450,7 +450,6 @@ func (g *Gox) handleRoutes(r *mux.Router, eTags map[string]string) {
 
 				if len(funcReturn.Templates) > 0 {
 					_, err = tmpl.ParseFiles(funcReturn.Templates...)
-					log.Println(funcReturn.Templates)
 					if err != nil {
 						log.Println("Error Parsing Files", len(funcReturn.Templates), funcReturn.Templates)
 						http.Error(w, "Internal Server Error", http.StatusInternalServerError)
