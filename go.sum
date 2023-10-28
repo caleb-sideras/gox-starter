@@ -1,8 +1,2 @@
-github.com/caleb-sideras/gox v0.0.1 h1:od6RmQx+plrZO0Q6vThrukPq7euTUxfQrlxBYhswE1Y=
-github.com/caleb-sideras/gox v0.0.1/go.mod h1:HG/SqTXCB/1zPTpE1jckJGwX7P/KJSEFkrHNcNoDqxg=
-github.com/caleb-sideras/gox v0.0.2 h1:rlLAuLri+jBmV7Uy+gkN2CEYrvUyG9NJMa4NvDSOqM0=
-github.com/caleb-sideras/gox v0.0.2/go.mod h1:HG/SqTXCB/1zPTpE1jckJGwX7P/KJSEFkrHNcNoDqxg=
 github.com/gorilla/mux v1.8.0 h1:i40aqfkR1h2SlN9hojwV5ZA91wcXFOvkdNIeFDP5koI=
 github.com/gorilla/mux v1.8.0/go.mod h1:DVbg23sWSpFRCP0SfiEN6jmj59UnW/n46BH5rLB71So=
-github.com/yuin/goldmark v1.5.5 h1:IJznPe8wOzfIKETmMkd06F8nXkmlhaHqFRM9l1hAGsU=
-github.com/yuin/goldmark v1.5.5/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=

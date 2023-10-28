@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "rollup": "rollup -c",
+    "copy-css": "mkdir -p ./static/css && cp ./src/styles/app.css ./static/css/output.css",
     "go-build": "go run src/main.go build",
     "go-start": "go run src/main.go run",
-    "build": "npm run rollup && npm run go-build",
+    "build": "npm run rollup && npm run copy-css && npm run go-build",
     "start": "npm run go-start"
   },
   "keywords": [],
