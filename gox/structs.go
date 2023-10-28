@@ -1,7 +1,7 @@
 package gox
 
 import (
-	"github.com/caleb-sideras/goxstack/gox/data"
+	"github.com/caleb-sideras/gox-starter/gox/data"
 	"net/http"
 )
 

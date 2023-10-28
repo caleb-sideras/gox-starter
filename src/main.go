@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/caleb-sideras/goxstack/gox"
-	"github.com/caleb-sideras/goxstack/src/global"
-	"github.com/caleb-sideras/goxstack/src/server"
+	"github.com/caleb-sideras/gox-starter/gox"
+	"github.com/caleb-sideras/gox-starter/src/global"
+	"github.com/caleb-sideras/gox-starter/src/server"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	
+
 	err := os.Chdir("src")
 	if err != nil {
 		panic(err)
