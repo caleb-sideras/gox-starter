@@ -1,7 +1,7 @@
 package home
 
 import (
-	"github.com/caleb-sideras/gox-starter/gox/data"
+	"github.com/caleb-sideras/gox-starter/.gox/data"
 )
 
 type HomeContent struct {

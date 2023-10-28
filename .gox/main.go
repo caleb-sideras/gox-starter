@@ -16,9 +16,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/caleb-sideras/gox-starter/gox/data"
-	"github.com/caleb-sideras/gox-starter/gox/render"
-	"github.com/caleb-sideras/gox-starter/gox/utils"
+	"github.com/caleb-sideras/gox-starter/.gox/data"
+	"github.com/caleb-sideras/gox-starter/.gox/render"
+	"github.com/caleb-sideras/gox-starter/.gox/utils"
 	"github.com/gorilla/mux"
 )
 
@@ -1036,7 +1036,7 @@ var HandleList = []HandlerDefault{
 `
 	log.Println(code)
 
-	err := ioutil.WriteFile("../gox/generated.go", []byte(code), 0644)
+	err := ioutil.WriteFile("../.gox/generated.go", []byte(code), 0644)
 	if err != nil {
 		return err
 	}

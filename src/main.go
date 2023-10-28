@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/caleb-sideras/gox-starter/gox"
+	"github.com/caleb-sideras/gox-starter/.gox"
 	"github.com/caleb-sideras/gox-starter/src/global"
 	"github.com/caleb-sideras/gox-starter/src/server"
 	"github.com/gorilla/mux"

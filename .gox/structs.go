@@ -1,8 +1,9 @@
 package gox
 
 import (
-	"github.com/caleb-sideras/gox-starter/gox/data"
 	"net/http"
+
+	"github.com/caleb-sideras/gox-starter/.gox/data"
 )
 
 type PageData struct {
