@@ -755,16 +755,19 @@ func (g *Gox) renderStaticFiles() error {
 		default:
 			log.Printf("Unknown function type for: %T\n", rd.Handler)
 		}
-
-		file, err := utils.CreateFile(ETAG_FILE, g.OutputDir)
-		if err != nil {
-			return err
-		}
-		_, err = file.Write([]byte(output))
-		if err != nil {
-			return err
-		}
 	}
+
+	file, err := utils.CreateFile(ETAG_FILE, g.OutputDir)
+	defer file.Close()
+	if err != nil {
+		return err
+	}
+
+	_, err = file.Write([]byte(output))
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
