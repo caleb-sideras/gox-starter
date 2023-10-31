@@ -1,3 +1,3 @@
 [submodule ".gox"]
 	path = .gox
-	url = git@github.com:caleb-sideras/gox.git
+	url = https://github.com/caleb-sideras/gox.git
